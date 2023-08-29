@@ -1,3 +1,3 @@
-module github.com/colinwilson/lotusdocs
+module github.com/solo-io/docs-theme-lotus
 
 go 1.19
