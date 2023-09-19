@@ -74,6 +74,7 @@
 .docs-content .main-content li {
     color: var(--text-default);
     font-weight: 250;
+    list-style: none; 
 
     strong {
         font-weight: 600
@@ -170,7 +171,6 @@
 
 // Unordered List Styling
 .docs-content .main-content ul {
-    list-style: none;
     line-height: 26px;
     padding-left: 0;
 
@@ -178,6 +178,7 @@
         position: relative;
         padding-left: 27px;
         // margin-bottom: 5px;
+
     }
 
     li::before {
@@ -198,6 +199,7 @@
     list-style: none;
     line-height: 26px;
     padding-left: 0;
+    //list-style-position: inside;
 
     ul {
         li::before {
@@ -211,7 +213,7 @@
             background: var(--gray-500);
         }
         counter-reset: listitem;
-        
+
         li {
             margin-top: 0.5rem;
         }
