@@ -363,8 +363,10 @@ $stretched-link-z-index:                  1;
 
     --folder: "\e2c7";
     --article: "\ef42";
-    --dash: "\f88a";
-    --dir-right: "\e5da";
+    // old icon - in front of menu entries on the left (\f88a)
+    --dash: "";
+    // old icon -> in front of folders on the left (\e5da)
+    --dir-right: "";
 
     // Cards
     --card-bg: var(--white);
