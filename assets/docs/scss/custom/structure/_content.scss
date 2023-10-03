@@ -16,7 +16,8 @@
     --blockquote-border-color: var(--gray-300);
 
     --code-block-bg: white; /*212d63*/
-    --inline-code-bg: var(--gray-100);
+    /*--inline-code-bg: var(--gray-200);*/
+    --inline-code-bg: rgb(247, 244, 244);
     // Removed the border around inline code
     //--inline-code-border: 1px solid var(--gray-400);
 
@@ -45,9 +46,9 @@
 
 // Links
 .docs-content .main-content a {
-    // color: var(--content-link-color);
+    color: var(--content-link-color);
     font-weight: 600;
-    color: #158BC2;
+    // color: #158BC2;
     &:hover {
         text-decoration: underline 2px var(--primary-200);
         text-underline-offset: 2.5px !important;
@@ -55,8 +56,8 @@
     }
 
     code {
-        // color: var(--content-link-color);
-        color: #158BC2;
+        color: var(--content-link-color);
+        //color: #158BC2;
     }
     // &.anchor i {
     //     transform: rotate(-45deg);
@@ -90,8 +91,8 @@
     font-weight: 350;
     margin-top: 2rem;
     margin-bottom: 1rem;
-    // color: var(--body-color);
-    color: #253e58;
+    color: var(--body-color);
+    //color: #253e58;
 }
 
 .docs-content .main-content h2 {
@@ -144,7 +145,8 @@
     }
 
     code {
-        background: rgb(247, 244, 244);
+        /*background: rgb(247, 244, 244); */
+        background: var(--inline-code-bg);
     }
 }
 
