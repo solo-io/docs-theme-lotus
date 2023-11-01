@@ -1,6 +1,5 @@
 /* PrismJS 1.29.0
 https://prismjs.com/download.html#themes=prism-tomorrow&languages=markup+css+clike+javascript+diff&plugins=line-highlight+line-numbers+file-highlight+autoloader+normalize-whitespace+toolbar+copy-to-clipboard+treeview */
-import params from "@params";
 /// <reference lib="WebWorker"/>
 
 var _self = (typeof window !== 'undefined')
@@ -2877,7 +2876,7 @@ Prism.languages.js = Prism.languages.javascript;
 	var lang_data = {};
 
 	var ignored_language = 'none';
-	var languages_path = params.langPath;
+	var languages_path = 'components/';
 
 	var script = Prism.util.currentScript();
 	if (script) {
@@ -3767,3 +3766,6 @@ Prism.languages.js = Prism.languages.javascript;
 		}
 	});
 }());
+
+//Prism Autoloader Plugin Grammar Path
+Prism.plugins.autoloader.languages_path = '/docs/js/components/';

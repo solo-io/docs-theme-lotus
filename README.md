@@ -2,7 +2,7 @@
 
 [Lotus Docs](https://lotusdocs.dev) is an easily updated and customisable [Hugo](https://gohugo.io/) theme for building fast, secure, and SEO-friendly documentation sites.
 
-![Lotus Docs Banner](https://res.cloudinary.com/lotuslabs/image/upload/r_10/v1693340386/Lotus%20Docs/Social%20Media/lotus_docs_social_preview_github_1280x640_colour_v1.3_xzm1ex.webp)
+![Lotus Docs Banner](https://res.cloudinary.com/lotuslabs/image/upload/v1688223320/Lotus%20Docs/Social%20Media/lotus_docs_banner_mockup_v1.1_rounded_glwogb.webp)
 
 Check out the demo site [https://lotusdocs.dev/docs/](https://lotusdocs.dev/docs/) (also doubles as the documentation guide for Lotus Docs 📖)
 
@@ -15,7 +15,7 @@ Check out the demo site [https://lotusdocs.dev/docs/](https://lotusdocs.dev/docs
 * [x] Fast, Accessible and SEO-Friendly (4 x 💯 scores on [Google Lighthouse](https://pagespeed.web.dev/)!)
 * [x] Secure by default
 * [x] Built on Bootstrap 5
-* [x] Deploy on [GitHub Pages](https://lotusdocs.dev/docs/deployment/platforms/github-pages/), [GitLab Pages](https://lotusdocs.dev/docs/deployment/platforms/gitlab-pages/), [Vercel](https://vercel.com/), [Netlify](https://netlify.com), or [Cloudflare Pages](https://pages.cloudflare.com/)
+* [x] Deploy on [Vercel](https://vercel.com/) with multiple options
 * [x] Multilingual support (i18n)
 * [x] Powerful Syntax Highlighting via [Prism.js](https://prismjs.com/)
 * [x] Dark Mode
@@ -33,17 +33,16 @@ Check out the demo site [https://lotusdocs.dev/docs/](https://lotusdocs.dev/docs
 * [x] Cross-browser testing via [BrowserStack](https://browserstack.com)
 * [x] Feedback widget
 * [x] Math equations powered by [KaTeX](https://katex.org/)
-* [x] [Mermaid](https://mermaid.js.org/) Support
-* [x] [Open Graph](https://ogp.me/)
-
+* [ ] [Open Graph](https://ogp.me/)
+* [ ] [Mermaid](https://mermaid.js.org/) Support
 
 ## Getting Started
 
 ### Requirements
 
-- Hugo **Extended** (minimum version: 0.117.0)
+- Hugo **Extended** (minimum version: 0.100.0)
 - git
-- Go (minimum version v1.20)
+- Go (minimum version v1.19)
 
 ### Initialize your site as a Hugo Module
 
