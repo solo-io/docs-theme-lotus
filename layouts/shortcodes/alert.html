@@ -14,16 +14,17 @@
   <span class="material-icons size-20 me-2">
   {{ with .Get "context" }}{{ index $icon_array . }}{{ else }}{{ $icon_array.default }}{{ end }}
   </span>
-  {{ end }}
+  {{- end -}}
   </div>
-  {{ with .Get "text" }}<div class="w-100">{{ . | markdownify }}</div>
+  {{ with .Get "text" }}
+  <div class="w-100">{{ . | $.Page.RenderString }}</div>
   {{ else }}
-  {{ with .Inner }}
+  {{ with .InnerDeindent }}
   <div class="w-100">
   {{ . }}
   </div>
   {{ else }}
   {{ errorf "No valid text variable or Inner content given"}}
-  {{ end }}
-  {{ end}}
+  {{- end -}}
+  {{- end -}}
 </div>
