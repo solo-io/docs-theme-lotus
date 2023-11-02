@@ -10,13 +10,17 @@
     --content-icon-border: var(--sidebar-icon-bg);
     --content-link-color: var(--primary);
 
-    --ordered-list-bg: var(--gray-300);
+    //changed the background color of ordered lists
+    --ordered-list-bg: #ebf4f9 /*var(--gray-300)*/;
     --ordered-list-color: var(--gray-800);
     --blockquote-border-color: var(--gray-300);
 
-    --code-block-bg: #212d63;
-    --inline-code-bg: var(--gray-100);
-    --inline-code-border: 1px solid var(--gray-400);
+    --code-block-bg: white; /*212d63*/
+    /*--inline-code-bg: var(--gray-200);*/
+    --inline-code-bg: rgb(247, 244, 244);
+    // Removed the border around inline code
+    //--inline-code-border: 1px solid var(--gray-400);
+    --header-color: #253e58;
 
 }
 
@@ -34,6 +38,7 @@
     --code-block-bg: var(--gray-900);
     --inline-code-bg: var(--gray-800);
     --inline-code-border: 1px solid var(--gray-600);
+    --header-color: white;
 
 }
 
@@ -43,19 +48,22 @@
 
 // Links
 .docs-content .main-content a {
-    font-weight: 600;
     color: var(--content-link-color);
+    font-weight: 600;
+    // color: #158BC2;
     &:hover {
         text-decoration: underline 2px var(--primary-200);
         text-underline-offset: 2.5px !important;
         transition: 0s !important;
     }
+
+    code {
+        color: var(--content-link-color);
+        //color: #158BC2;
+    }
     // &.anchor i {
     //     transform: rotate(-45deg);
     // }
-    code {
-        color: var(--content-link-color);
-    }
 }
 
 .docs-content .main-content {
@@ -69,6 +77,12 @@
 
 .docs-content .main-content li {
     color: var(--text-default);
+    font-weight: 250;
+    list-style: none; 
+
+    strong {
+        font-weight: 600
+    }
 }
 
 .docs-content .main-content h1,
@@ -76,39 +90,66 @@
 .docs-content .main-content h3,
 .docs-content .main-content h4,
 .docs-content .main-content h5 {
-    font-weight: 700;
-    color: var(--body-color);
+    font-weight: 350;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    //color: var(--body-color);
+    color: var(--header-color);
+    
+}
+
+.docs-content .main-content h2 {
+    font-size: 27px;
+}
+
+.docs-content .main-content h3 {
+    font-size: 22px;
+}
+
+.docs-content .main-content h4 {
+    font-size: 21px;
+}
+
+.docs-content .main-content a {
+    font-weight: 500;
 }
 
 .docs-content .content-title {
-    font-weight: 700;
-    align-self: center;
-}
+    font-weight: 600;
+    margin-top: 1rem;
 
-i {
-    &.title-icon {
+    i {
         width: 44px;
         height: 44px;
         color: var(--content-icon-color);
         background-color: var(--content-icon-bg);
         display: inline-flex !important;
-        align-self: center;
         align-items: center;
         justify-content: center;
         font-size: 24px;
         // border: solid 1px var(--content-icon-border);
         border-radius: 5px;
-
-        @media (max-width: 768px) {
-            align-self: auto;
-        }
     }
 }
 
 .docs-content p {
+
+    font-weight: 250;
+
     &.lead {
+        margin-top: 1em;
+        margin-bottom: 1em;
         color: var(--text-muted);
-        font-weight: 400;
+        font-weight: 280;
+    }
+
+    strong {
+        font-weight: 600
+    }
+
+    code {
+        /*background: rgb(247, 244, 244); */
+        background: var(--inline-code-bg);
     }
 }
 
@@ -130,31 +171,23 @@ i {
 }
 
 // Images
-.docs-content .main-content {
-    img,
-    svg {
-        max-width: 100%;
-        height: auto;
-    }
-    // External link icon
-    a svg {
-        vertical-align: middle;
-        padding-bottom: 0.25rem;
-        margin-left: 3px;
-    }
+.docs-content .main-content img {
+    max-width: 100%;
 }
 
 // Unordered List Styling
 .docs-content .main-content ul {
+    line-height: 26px;
     padding-left: 0;
 
-    > li {
+    li {
         position: relative;
-        padding-left: 32px;
+        padding-left: 27px;
         // margin-bottom: 5px;
+
     }
 
-    > li::before {
+    li::before {
         content: "";
         position: absolute;
         width: 6px;
@@ -162,22 +195,50 @@ i {
         left: 8px;
         top: 10px;
         border-radius: 30%;
-        background: var(--gray-500);
+        /*background: var(--gray-300);*/
+        background: var(--ordered-list-color);
     }
 }
 
 // Ordered List Styling
 .docs-content .main-content ol {
     counter-reset: listitem;
-    > li {
-        counter-increment: listitem;
-        position: relative;
-        padding-left: 32px;
+    list-style: none;
+    line-height: 26px;
+    padding-left: 0;
+    //list-style-position: inside;
+
+    ul {
+        li::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            left: 8px;
+            top: 10px;
+            padding: 0;
+            border-radius: 30%;
+            /* background: var(--gray-500);*/
+            background: var(--ordered-list-color);
+        }
+        counter-reset: listitem;
+
+        li {
+            margin-top: 0.5rem;
+        }
     }
 
-    > li::before {
+    li {
+        counter-increment: listitem;
+        position: relative;
+        padding-left: 27px;
+        margin-top: 1rem;
+        
+    }
+
+    li::before {
         content: counter(listitem);
-        background: var(--ordered-list-bg);
+        background-position: 0px 5px;
+        background: var(--ordered-list-bg); 
         color: var(--ordered-list-color);
         font-size: 12px;
         font-weight: 500;
@@ -186,18 +247,12 @@ i {
         padding: 5px 0;
         width: 20px;
         height: 20px;
-        border-radius: 5px;
+        border-radius: 5px; /* change to border-radius: 50% to make the square a circle around the numbered list item */
         position: absolute;
         left: 0;
         top: 3px;
+        /*border: 0.5px solid #158BC2; Required when we want to add a border around numbered list items */
     }
-}
-
-// Universal List Styling
-.docs-content .main-content ol,
-.docs-content .main-content ul {
-    list-style: none;
-    line-height: 26px;
 }
 
 // Blockquote
@@ -209,11 +264,12 @@ i {
 }
 
 // Code
+
 .docs-content .main-content div.highlight {
     margin: 16px 0;
     padding: $code-block-padding-top;
     background: var(--code-block-bg);
-    border-radius: 4px;
+
     pre {
         padding: 0;
     }
@@ -221,26 +277,27 @@ i {
 
 .docs-content .main-content code {
     font-size: inherit;
-    // color: var(--text-default);
-    font-weight: 400;
+    color: var(--text-default);
+    font-weight: 500;
     padding: 1px 2px;
-    background: var(--inline-code-bg);
-    border: var(--inline-code-border);
-    border-radius: 4px;
+    font-weight: 400;
+    // background: var(--inline-code-bg);
+    //border: var(--inline-code-border);
+    //border-radius: 4px;
 }
 
 .docs-content .main-content pre {
     margin: 0;
-    // background-color: var(--code-block-bg) !important;
-    border-radius: 4px;
+    background-color: var(--code-block-bg) !important;
+    //background-color: white!important;
     padding: $code-block-padding-top;
+    display: inline;
 
     code {
-        // color: #f5fbff;
-        font-size: 0.8rem;
+        color: #f5fbff;
+        font-size: 1em;
         display: block;
-        // background: var(--code-block-bg);
-        border: none;
+        background: var(--code-block-bg);
         overflow-x: auto;
         line-height: 1.5;
         padding: 0 2.5rem 1.25rem 2.5rem;
@@ -252,8 +309,9 @@ i {
 
 // bold code
 .docs-content .main-content strong {
+
     code {
-        font-weight: 700;
+        font-weight: 900;
     }
 }
 

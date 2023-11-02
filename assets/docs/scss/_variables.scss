@@ -1,3 +1,59 @@
+// scss-docs-start color-variables
+$blue:    #253e58; /*#2f55d4*/
+$indigo:  #6610f2;
+$purple:  #6f42c1;
+$pink:    #d63384;
+$red:     #e43f52;
+$orange:  #fd7e14;
+$yellow:  #f17425;
+$green:   #2eca8b;
+$teal:    #20c997;
+$cyan:    #17a2b8;
+$dark:    #0e1420;
+// scss-docs-end color-variables
+
+// scss-docs-start colors-map
+$colors: (
+  "blue":       $blue,
+  "indigo":     $indigo,
+  "purple":     $purple,
+  "pink":       $pink,
+  "red":        $red,
+  "orange":     $orange,
+  "yellow":     $yellow,
+  "green":      $green,
+  "teal":       $teal,
+  "cyan":       $cyan,
+  "black":      $black,
+  "white":      $white,
+  "gray":       $gray-600,
+  "gray-dark":  $gray-800
+);
+// scss-docs-end colors-map
+
+// scss-docs-start theme-color-variables
+$primary:       $blue;
+$secondary:     $gray-600;
+$success:       $green;
+$info:          $cyan;
+$warning:       $yellow;
+$danger:        $red;
+$light:         $gray-100;
+$dark:          $dark;
+// scss-docs-end theme-color-variables
+
+// scss-docs-start theme-colors-map
+$theme-colors: (
+  "primary":    $primary,
+  "secondary":  $secondary,
+  "success":    $success,
+  "info":       $info,
+  "warning":    $warning,
+  "danger":     $danger,
+  "light":      $light,
+  "dark":       $dark
+);
+
 // Prefix for :root CSS variables
 
 $prefix:                      bs-;
@@ -5,20 +61,33 @@ $prefix:                      bs-;
 $btn-link-color:              var(--#{$prefix}link-color);
 $btn-link-hover-color:        var(--#{$prefix}link-hover-color);
 
+// Links
+//
+// Style anchor elements.
+
+$link-color:                              $primary;
+$link-decoration:                         underline;
+$link-shade-percentage:                   20%;
+$link-hover-color:                        shift-color($link-color, $link-shade-percentage);
+$link-hover-decoration:                   null;
+
+$stretched-link-pseudo-element:           after;
+$stretched-link-z-index:                  1;
+
 :root {
 
     // color-variables (HSL)
 
-    --blue-900-hsl: 243, 72%, 25%;
-    --blue-800-hsl: 239, 70%, 32%;
-    --blue-700-hsl: 235, 68%, 38%;
-    --blue-600-hsl: 231, 66%, 45%;
-    --blue-500-hsl: 226, 66%, 51%;
-    --blue-400-hsl: 221, 77%, 60%;
-    --blue-300-hsl: 217, 88%, 69%;
-    --blue-200-hsl: 212, 100%, 79%;
-    --blue-100-hsl: 207, 100%, 88%;
-    --blue-50-hsl: 198, 100%, 97%;
+    --blue-900-hsl: 199, 80%, 42%;
+    --blue-800-hsl: 199, 80%, 42%;
+    --blue-700-hsl: 199, 80%, 42%;
+    --blue-600-hsl: 199, 80%, 42%;
+    --blue-500-hsl: 199, 80%, 42%;
+    --blue-400-hsl: 199, 80%, 42%;
+    --blue-300-hsl: 199, 80%, 70%;
+    --blue-200-hsl: 199, 80%, 42%;
+    --blue-100-hsl: 199, 80%, 42%;
+    --blue-50-hsl: 199, 80%, 98%;
 
     --green-900-hsl: 153, 54%, 20%;
     --green-800-hsl: 145, 57%, 25%;
@@ -247,7 +316,7 @@ $btn-link-hover-color:        var(--#{$prefix}link-hover-color);
     --text-light: #dee2e6;
 
     // Fonts
-    --fw-medium: 600;
+    --fw-medium: 400;
 
     // Shadows
     --shadow-sm: 0 .125rem .25rem rgba(var(--dark), .15);
@@ -294,8 +363,10 @@ $btn-link-hover-color:        var(--#{$prefix}link-hover-color);
 
     --folder: "\e2c7";
     --article: "\ef42";
-    --dash: "\f88a";
-    --dir-right: "\e5da";
+    // old icon - in front of menu entries on the left (\f88a)
+    --dash: "";
+    // old icon -> in front of folders on the left (\e5da)
+    --dir-right: "";
 
     // Cards
     --card-bg: var(--white);

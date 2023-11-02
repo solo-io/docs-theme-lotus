@@ -4,15 +4,12 @@ import Tab from "/js/bootstrap/src/tab";
 import Collapse from "/js/bootstrap/src/collapse";
 import Dropdown from "/js/bootstrap/src/dropdown";
 import ScrollSpy from "js/bootstrap/src/scrollspy";
-import Tooltip from "js/bootstrap/src/tooltip";
 
 export default {
     Tab,
     Collapse,
     Dropdown,
-    ScrollSpy,
-    Tooltip
+    ScrollSpy
 }
 
 window.Collapse = Collapse;
-window.Tooltip = Tooltip;
