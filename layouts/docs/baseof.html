@@ -100,5 +100,11 @@
                 {{- partialCached (printf "%s/%s" ($.Scratch.Get "pathName") "footer/flexsearch.html") . -}}
             {{ end }}
         {{ end }}
+
+        <!-- Pagefind Search Config -->
+        {{ if .Site.Params.pagefind.enabled -}}
+            {{- partialCached (printf "%s/%s" ($.Scratch.Get "pathName") "footer/pagefind.html") . -}}
+        {{ end }}
+
     </body>
 </html>
