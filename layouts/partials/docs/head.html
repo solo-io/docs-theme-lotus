@@ -46,6 +46,14 @@
             {{ end }}
         {{ end }}
     {{ end }}
+    <!-- Pagefind -->
+    {{ if or (not (isset .Site.Params.pagefind "enabled")) (eq .Site.Params.pagefind.enabled true) -}}
+        {{ if and (.Site.Params.docsearch.appID) (.Site.Params.docsearch.apiKey) -}}
+        {{ else }}
+            {{ $pagefind := resources.Get (printf "/%s/%s" ($.Scratch.Get "pathName") "pagefind/pagefind.js") }}
+                <script type="text/javascript" src="{{ $pagefind }}"></script>
+        {{ end }}
+    {{ end }}
     <!-- Google Fonts -->
     {{- partialCached "google-fonts" . }}
     <!-- Custom CSS -->
