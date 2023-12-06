@@ -147,7 +147,7 @@
                 {{ else -}}
                 description: {{ .Summary | htmlUnescape | plainify }},
                 {{ end -}}
-                content: {{ .Content | htmlUnescape | plainify }}
+                content: ""
             }
         );
     {{ end -}}
