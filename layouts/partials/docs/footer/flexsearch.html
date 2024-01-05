@@ -85,20 +85,26 @@
 
     (function(){
 
-    var index = new FlexSearch.Document({
-        // charset: "latin:default",
-        tokenize: {{ .Site.Params.flexsearch.tokenize | default "forward" }},
-        minlength: {{ .Site.Params.flexsearch.minQueryChar | default 0}},
-        cache: {{ .Site.Params.flexsearch.cache | default 100 }},
-        optimize: {{ .Site.Params.flexsearch.optimize | default true }},
-        document: {
-        id: 'id',
-        store: [
-            "href", "title", "description"
-        ],
-        index: ["title", "description", "content"]
+        var indexSectionMap = {};
+        function getIndex(section) {
+            if (!indexSectionMap[section]) {
+                indexSectionMap[section] = new FlexSearch.Document({
+                    // charset: "latin:default",
+                    tokenize: {{ .Site.Params.flexsearch.tokenize | default "forward" }},
+                    minlength: {{ .Site.Params.flexsearch.minQueryChar | default 0}},
+                    cache: {{ .Site.Params.flexsearch.cache | default 100 }},
+                    optimize: {{ .Site.Params.flexsearch.optimize | default true }},
+                    document: {
+                    id: 'id',
+                    store: [
+                        "href", "title", "description"
+                    ],
+                    index: ["title", "description", "content"]
+                    }
+                });
+            }
+            return indexSectionMap[section];
         }
-    });
 
 
     // Not yet supported: https://github.com/nextapps-de/flexsearch#complex-documents
@@ -119,25 +125,26 @@
 
     // https://discourse.gohugo.io/t/range-length-or-last-element/3803/2
 
-    {{ $list := slice }}
-    {{- if and (isset .Site.Params.flexsearch "searchsectionsindex") (not (eq (len .Site.Params.flexsearch.searchSectionsIndex) 0)) }}
-        {{- if eq .Site.Params.docs.searchSectionsIndex "ALL" }}
-            {{- $list = .Site.Pages }}
-        {{- else }}
-            {{- $list = (where .Site.Pages "Type" "in" .Site.Params.flexsearch.searchSectionsIndex) }}
-        {{- if (in .Site.Params.flexsearch.searchSectionsIndex "HomePage") }}
-            {{ $list = $list | append .Site.Home }}
-        {{- end }}
-        {{- end }}
-    {{- else }}
-        {{ $version := .Site.Params.version }}
-        {{- $list = (where .Site.Pages "Section" $version) }}
-    {{- end }}
+    // {{ $list := slice }}
+    // {{- if and (isset .Site.Params.flexsearch "searchsectionsindex") (not (eq (len .Site.Params.flexsearch.searchSectionsIndex) 0)) }}
+    //     {{- if eq .Site.Params.docs.searchSectionsIndex "ALL" }}
+    //         {{- $list = .Site.Pages }}
+    //     {{- else }}
+    //         {{- $list = (where .Site.Pages "Type" "in" .Site.Params.flexsearch.searchSectionsIndex) }}
+    //     {{- if (in .Site.Params.flexsearch.searchSectionsIndex "HomePage") }}
+    //         {{ $list = $list | append .Site.Home }}
+    //     {{- end }}
+    //     {{- end }}
+    // {{- else }}
+    //     {{ $version := .Site.Params.version }}
+    //     {{- $list = (where .Site.Pages "Section" $version) }}
+    // {{- end }}
 
+    {{ $list := .Site.Pages }}
     {{ $len := (len $list) -}}
 
     {{ range $index, $element := $list -}}
-        index.add(
+        getIndex({{ .Section }}).add(
             {
                 id: {{ $index }},
                 href: "{{ .RelPermalink }}",
@@ -145,7 +152,7 @@
                 {{ with .Description -}}
                     description: {{ . }},
                 {{ else -}}
-                description: {{ .Summary | htmlUnescape | plainify }},
+                    description: {{ .Summary | htmlUnescape | plainify }},
                 {{ end -}}
                 content: ""
             }
@@ -158,6 +165,11 @@
         const maxResult = {{ .Site.Params.flexsearch.maxResult | default 5}};
         const minlength = {{ .Site.Params.flexsearch.minQueryChar | default 0}};
         var searchQuery = this.value;
+        // There doesn't seem to be a perfect way to detect "Section" via JS, but
+        // this should work by finding any cases where something in url exists in search index key
+        const curSection = window.location.pathname.replace(/^\//, '').split('/')
+            .find(part=>!!indexSectionMap[part]) || "{{ .Site.Params.version }}" || 'main';
+        var index = getIndex(curSection);
         var results = index.search(searchQuery, {limit: maxResult, enrich: true});
 
         // flatten results since index.search() returns results for each indexed field
