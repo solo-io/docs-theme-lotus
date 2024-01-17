@@ -1,5 +1,4 @@
 <head>
-    
     <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -33,6 +32,8 @@
     <meta name="keywords" content="Documentation, Solo, Application Networking, API Gateway, Service mesh" />
     <!-- favicon -->
     {{ block "favicon" . }}{{ partialCached (printf "%s/%s" ($.Scratch.Get "pathName") "head/favicon.html") . }}{{ end }}
+    <!-- Google Seach Console -->
+    <meta name="google-site-verification" content="mf0poNLYvecxy1WXiSLio8TYARk5OX_dCydX6JjRuk0" />
     <!-- Dark Mode -->
     {{ if eq .Site.Params.docs.darkMode true -}}
         {{ $darkModeInit := resources.Get (printf "/%s/%s" ($.Scratch.Get "pathName") "js/darkmode-init.js") | js.Build | minify -}}
