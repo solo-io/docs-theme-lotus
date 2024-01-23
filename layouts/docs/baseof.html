@@ -22,7 +22,7 @@
                         {{ if .Site.IsMultiLingual }}
                             {{- partial (printf "%s/%s" ($.Scratch.Get "pathName") "top-header.html") . -}}
                         {{ else }}
-                            {{- partialCached (printf "%s/%s" ($.Scratch.Get "pathName") "top-header.html") . -}}
+                            {{- partial (printf "%s/%s" ($.Scratch.Get "pathName") "top-header.html") . -}}
                         {{ end }}
                             <div class="container-fluid">
                                 <div class="layout-spacing">
