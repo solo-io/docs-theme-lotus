@@ -128,8 +128,10 @@
 
 #TableOfContents a,
 #toc a {
+    
     display: block;
     color: var(--text-default);
+    text-decoration: none;
     padding: 0 10px 0 10px;
     padding-block: 0px 0.05rem;
     margin: 0 0 0 -10px;
@@ -140,16 +142,32 @@
     transition: all 0.1s;
     -webkit-transition: all 0.1s;
 
+
     &:hover {
         background-color: var(--toc-link-hover-bg-color);
         transition: all 0.1s;
         -webkit-transition: all 0.2s;
     }
+    
+    &.toc-level-1 {
+        margin-left: 0em;
+        
+    }
+    &.toc-level-2 {
+        margin-left: 1em;
+    }
+    
+    &.toc-level-3 {
+        margin-left: 2em;
+    }
+    
+    &.active {
+        color: var(--white);
+        background-color: var(--primary);
+        // font-weight: 600;
+        opacity: 0.9;
+    }
 }
 
-#toc a.active {
-    color: var(--white);
-    background-color: var(--primary);
-    // font-weight: 600;
-    opacity: 0.9;
-}
+
+
