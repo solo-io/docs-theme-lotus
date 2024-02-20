@@ -1,8 +1,61 @@
 <toc>
-    <div class="fw-bold text-uppercase mb-2">On this page</div>
+    <div class="fw-bold text-uppercase mb-2" >On this page</div>
     {{ if eq .Site.Params.docs.scrollSpy true -}}
-        {{ .TableOfContents | replaceRE "<nav id=\"TableOfContents\">" "<nav id=\"toc\">" | safeHTML }}
-    {{ else -}}
-        {{ .TableOfContents }}
-    {{ end -}}
+        {{- /* Get configuration. */}}
+        {{- $startLevel := or ($.Param "toc.startLevel" | int) 2 }}
+        {{- $endLevel := or ($.Param "toc.endLevel" | int) 4 }}
+        
+        {{- $minNumHeadings := or ($.Param "toc.minNumHeadings" | int) 2 }}
+        
+        {{- /* Get headings. */}}
+        {{- $headings := slice }}
+        {{- $ids := slice }}
+        {{- range findRE `(?is)<h\d.*?</h\d>` .Content }}
+          {{- $level := substr . 2 1 | int }}
+          {{- if and (ge $level $startLevel) (le $level $endLevel) }}
+            {{- $text := replaceRE `(?is)<h\d.*?>(.+?)</h\d>` "$1" . }}
+            {{- $text = trim $text " " | plainify }}
+            {{- $id := "" }}
+            {{- if findRE `\s+id=` . }}
+              {{- $id = replaceRE `(?is).+?\s+id=(?:\x22|\x27)?(.*?)(?:\x22|\x27)?[\s>].+` "$1" . }}
+              {{- $ids = $ids | append $id }}
+              {{- if not $id }}
+                {{- errorf "The %q partial detected that the %q heading has an empty ID attribute."  }}
+              {{- end }}
+            {{- else }}
+              {{- errorf "The %q partial detected that the %q heading does not have an ID attribute."  }}
+            {{- end }}
+            {{- $headings = $headings | append (dict "id" $id "level" $level "text" $text) }}
+          {{- end }}
+        {{- end }}
+        
+        {{- /* Render */}}
+        {{- with $headings }}
+            {{- if ge (len .) $minNumHeadings }}
+            <nav id="toc" >
+                <ul>
+                    {{- range . }}
+                    {{- $attrs := dict "class" (printf "toc-item toc-level-%d" (add 1 (sub .level $startLevel))) }}
+                    {{- with .id }}
+                        {{- $attrs = merge $attrs (dict "href" (printf "#%s" .)) }}
+                    {{- end }}
+                    <li>
+                    <a
+                    {{- range $k, $v := $attrs }}
+                      {{- printf " %s=%q" $k $v | safeHTMLAttr }}
+                    {{- end -}}
+                    >{{ replace .text "link" "" }}</a>
+                     </li>
+                    {{- end }}
+                </ul>
+            </nav>
+            {{- end }}
+        {{- end }}
+        {{- else }}
+    {{- end }}
 </toc>
+
+
+
+
+
