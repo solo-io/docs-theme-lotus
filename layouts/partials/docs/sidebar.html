@@ -8,14 +8,55 @@
         </a>
     </div>
     <div class="sidebar-content" style="height: calc(100% - 131px);">
+        {{ if .Site.Params.versions }}
+            {{- $urlParts := strings.Split .Page.RelPermalink "/" -}}
+            {{- $version := index $urlParts 1 -}}
+            {{ $versionData := index (where .Site.Params.versions "linkVersion" $version) 0 }}
+            {{ if $versionData.subversions }}
+                {{- $subversion := index $urlParts 2 -}}
+                <div class="dropdown">
+                    <button class="btn btn-link btn-default dropdown-toggle ps-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ $subversion }}
+                    </button>
+                    <ul class="dropdown-menu text-end">
+                        {{ $newPath := delimit (after 3 $urlParts) "/" }}
+                        {{ $baseurl := .Site.BaseURL }}
+                        {{ range $versionData.subversions }}
+                            <li><a class="dropdown-item" href="{{ $baseurl }}/{{ $version }}/{{ . }}/{{ $newPath }}">{{ . }}</a></li>
+                        {{ end }}
+                    </ul>
+                </div>
+            {{ end }}
+        {{ end }}
         <ul class="sidebar-menu">
             {{ $currentPage := . -}}
+            {{- $urlParts := strings.Split .Page.RelPermalink "/" -}}
             {{ $section := $currentPage.Section -}}
             {{ range (where .Site.Sections.ByWeight "Section" "in" $section) }}
+                {{ $subversionToCheck := false }}
+                {{ if .Site.Params.versions }}
+                    {{ $versionData := index (where .Site.Params.versions "linkVersion" .Section) 0 }}
+                    {{ if and $versionData $versionData.subversions }}
+                        {{ range $urlParts }}
+                            {{ if in $versionData.subversions . }}
+                                {{ $subversionToCheck = . }}
+                            {{ end }}
+                        {{ end }}
+                    {{ end }}
+                {{ end }}
                 {{ $child_pages := union .Sections .Pages }}
+                <!-- if it is a subversion folder, treat it as the new root -->
+                {{ if $subversionToCheck }}
+                    {{ range $child_pages.ByWeight }}
+                        {{ if eq $subversionToCheck .Params.Params.subversion }}
+                            {{ $child_pages = union .Sections .Pages }}
+                            {{ break }}
+                        {{ end }}
+                    {{ end }}
+                {{ end }}
                 {{ range $child_pages.ByWeight }}
                     {{ if or (.Sections) (.Pages) }}
-                    {{ $active := in $currentPage.RelPermalink .RelPermalink }}
+                        {{ $active := in $currentPage.RelPermalink .RelPermalink }}
                         <li class="sidebar-dropdown {{ if eq .Site.Params.docs.sidebarIcons true -}}{{ else }}no-icon{{ end }} {{ if $active }}current active{{ end }}">
                             <button class="btn">
                                 {{ if eq .Site.Params.docs.sidebarIcons true -}}

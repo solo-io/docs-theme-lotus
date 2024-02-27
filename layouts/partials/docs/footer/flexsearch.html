@@ -141,10 +141,15 @@
     // {{- end }}
 
     {{ $list := .Site.Pages }}
-    {{ $len := (len $list) -}}
 
     {{ range $index, $element := $list -}}
-        getIndex({{ .Section }}).add(
+        {{ $subversion := or .Params.Params.subversion "" }}
+        {{ range .Ancestors -}}
+            {{ if .Params.Params.subversion }}
+                {{ $subversion = .Params.Params.subversion }}
+            {{ end }}
+        {{ end -}}
+        getIndex({{ .Section }}+"-"+{{ $subversion }}).add(
             {
                 id: {{ $index }},
                 href: "{{ .RelPermalink }}",
@@ -159,6 +164,19 @@
         );
     {{ end -}}
 
+    const versionSubversionMap = {};
+    {{ if .Site.Params.versions }}
+        {{ range .Site.Params.versions }}
+            {{ $version := .linkVersion }}
+            versionSubversionMap[{{$version}}] = [];
+            {{ if .subversions }}
+                {{ range .subversions }}
+                    versionSubversionMap[{{$version}}].push({{.}});
+                {{ end }}
+            {{ end }}
+        {{ end }}
+    {{ end }}
+
     search.addEventListener('input', show_results, true);
 
     function show_results(){
@@ -168,8 +186,10 @@
         // There doesn't seem to be a perfect way to detect "Section" via JS, but
         // this should work by finding any cases where something in url exists in search index key
         const curSection = window.location.pathname.replace(/^\//, '').split('/')
-            .find(part=>!!indexSectionMap[part]) || "{{ .Site.Params.version }}" || 'main';
-        var index = getIndex(curSection);
+            .find(part=>!!versionSubversionMap[part]) || "{{ .Site.Params.version }}" || 'main';
+        const curSubversion = window.location.pathname.replace(/^\//, '').split('/')
+            .find(part=>!!versionSubversionMap[curSection].includes(part)) || "";
+        var index = getIndex(curSection+'-'+curSubversion);
         var results = index.search(searchQuery, {limit: maxResult, enrich: true});
 
         // flatten results since index.search() returns results for each indexed field

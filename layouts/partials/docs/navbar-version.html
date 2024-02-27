@@ -3,6 +3,14 @@
 {{ $newPath := strings.Replace $path $version "" -1 }}
 {{ $baseurl := .Site.BaseURL }}
 
+{{ $versionTrimmed := trim $version "/" }}
+{{ $versionData := index (where .Site.Params.versions "linkVersion" $versionTrimmed) 0 }}
+
+{{ range $versionData.subversions }}
+    {{ $newPath = strings.Replace $newPath . "" 1 }}
+{{ end }}
+
+{{ $newPath = strings.TrimLeft "/" $newPath }}
 {{ range .Site.Params.versions }}
-    <li><a class="dropdown-item" href="{{ $baseurl }}/{{ .linkVersion }}/{{ $newPath }}">{{ .version }}</a></li>
+    <li><a class="dropdown-item" href="{{ .url }}/{{ $newPath }}">{{ .version }}</a></li>
 {{ end }}
