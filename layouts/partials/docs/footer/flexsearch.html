@@ -149,7 +149,7 @@
                 {{ $subversion = .Params.Params.subversion }}
             {{ end }}
         {{ end -}}
-        getIndex({{ .Section }}+"-"+{{ $subversion }}).add(
+        getIndex("{{ .Section }}-{{ $subversion }}").add(
             {
                 id: {{ $index }},
                 href: "{{ .RelPermalink }}",
