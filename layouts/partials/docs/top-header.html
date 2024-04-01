@@ -53,7 +53,7 @@
                         {{- $version := trim $versionLong "/" -}}
                         {{- range .Site.Params.versions -}}
                             {{- if in $version .linkVersion -}}
-                              {{- printf .version -}}
+                              {{- printf .dropdown -}}
                             {{ break }}
                             {{- end -}}
                         {{- end -}}
