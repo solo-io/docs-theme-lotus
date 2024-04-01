@@ -1,7 +1,7 @@
 {{- $path := .Page.RelPermalink -}}
 {{ $version := .Page.FirstSection.RelPermalink }}
 {{ $newPath := strings.Replace $path $version "" -1 }}
-{{ $baseurl := .Params.baseURL }}
+{{ $baseurl := .Site.BaseURL }}
 
 {{ $versionTrimmed := trim $version "/" }}
 {{ $versionData := index (where .Site.Params.versions "linkVersion" $versionTrimmed) 0 }}
