@@ -1,7 +1,7 @@
 {{- $path := .Page.RelPermalink -}}
 {{ $version := .Page.FirstSection.RelPermalink }}
 {{ $newPath := strings.Replace $path $version "" -1 }}
-{{ $baseurl := .Site.BaseURL }}
+{{ $baseurl := .Params.baseURL }}
 
 {{ $versionTrimmed := trim $version "/" }}
 {{ $versionData := index (where .Site.Params.versions "linkVersion" $versionTrimmed) 0 }}
@@ -12,5 +12,5 @@
 
 {{ $newPath = strings.TrimLeft "/" $newPath }}
 {{ range .Site.Params.versions }}
-    <li><a class="dropdown-item" href="{{ .url }}/{{ $newPath }}">{{ .version }}</a></li>
+    <li><a class="dropdown-item" href="{{ $baseurl }}/{{ .linkVersion }}/{{ $newPath }}">{{ .version }}</a></li>
 {{ end }}
