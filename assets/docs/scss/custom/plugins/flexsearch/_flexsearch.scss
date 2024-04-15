@@ -48,8 +48,8 @@
     }
 
     .flexsearch {
-        min-width: 500px;
-        width: 500px;
+        min-width: 600px;
+        width: 600px;
     }
 }
 
@@ -236,8 +236,8 @@
 
 @media (min-width: 992px) {
     #suggestions {
-        width: 500px;
-        max-width: 500px
+        width: 600px;
+        max-width: 600px
     }
 
     #suggestions a {
@@ -245,7 +245,7 @@
     }
 
     .suggestion__title {
-        width: 9rem;
+        width: 20rem;
         padding-right: 1rem;
         border-right: 1px solid var(--flexsearch-suggestion-title-border-color);
         display: inline-block;
