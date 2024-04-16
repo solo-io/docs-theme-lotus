@@ -159,7 +159,10 @@
                 {{ else -}}
                     description: {{ .Summary | htmlUnescape | plainify }},
                 {{ end -}}
-                content: ""
+                //content: ""
+                {{ with .Keywords -}}
+                    content: {{ . }}
+                {{ end -}}
             }
         );
     {{ end -}}
