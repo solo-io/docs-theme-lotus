@@ -159,7 +159,7 @@
                 {{ else -}}
                     description: {{ .Summary | htmlUnescape | plainify }},
                 {{ end -}}
-                content: ""
+                content: {{ .Content | htmlUnescape | plainify }}
             }
         );
     {{ end -}}
