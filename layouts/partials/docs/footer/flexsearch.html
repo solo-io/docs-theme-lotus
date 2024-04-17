@@ -159,7 +159,12 @@
                 {{ else -}}
                     description: {{ .Summary | htmlUnescape | plainify }},
                 {{ end -}}
-                content: {{ .Content | htmlUnescape | plainify }}
+                {{ $keywords := "" -}}
+                {{ with .Keywords -}}
+                    {{ $keywords = delimit . ", " }}
+                {{ end -}}
+                content: "{{ $keywords }}" 
+                // content: {{ .Content | htmlUnescape | plainify }}
             }
         );
     {{ end -}}
