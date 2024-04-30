@@ -7,7 +7,7 @@
 {{ $versionData := index (where .Site.Params.versions "linkVersion" $versionTrimmed) 0 }}
 
 {{ range $versionData.subversions }}
-    {{ $newPath = strings.Replace $newPath . "" 1 }}
+    {{ $newPath = strings.Replace $newPath .id "" 1 }}
 {{ end }}
 
 {{ $newPath = strings.TrimLeft "/" $newPath }}
