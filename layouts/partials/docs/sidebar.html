@@ -8,18 +8,21 @@
         </a>
     </div>
     <div class="sidebar-content" style="height: calc(100% - 131px);">
+        {{ $showSidebar := true }}
         {{ if .Site.Params.versions }}
             {{- $urlParts := strings.Split .Page.RelPermalink "/" -}}
             {{- $version := index $urlParts 1 -}}
             {{ $versionData := index (where .Site.Params.versions "linkVersion" $version) 0 }}
-            {{ if $versionData.subversions }}
+            {{ $showSidebar = and $versionData.subversions (index $urlParts 2) }}
+            {{ if and $versionData.subversions $showSidebar }}
                 {{- $subversion := index $urlParts 2 -}}
                 <div class="sidebar-subversion-btn-group">
                     {{ $newPath := delimit (after 3 $urlParts) "/" }}
                     {{ $baseurl := .Site.BaseURL }}
                     {{ range $versionData.subversions }}
                         {{ $active := eq $subversion .id }}
-                        <a class="btn btn-link btn-sm {{cond $active "btn-primary" "btn-soft"}}" href="{{ $baseurl }}/{{ $version }}/{{ .id }}/{{ $newPath }}">{{ .label }}</a>
+                        {{ $btnClass := cond $active "btn-primary" "btn-soft" }}
+                        <a class="btn btn-link btn-sm {{$btnClass}}" href="{{ $baseurl }}/{{ $version }}/{{ .id }}/{{ $newPath }}">{{ .label }}</a>
                     {{ end }}
                 </div>
             {{ end }}
@@ -29,6 +32,7 @@
             {{- $urlParts := strings.Split .Page.RelPermalink "/" -}}
             {{ $section := $currentPage.Section -}}
             {{ range (where .Site.Sections.ByWeight "Section" "in" $section) }}
+                {{ if not $showSidebar}} {{break}} {{ end }}
                 {{ $subversionToCheck := false }}
                 {{ if .Site.Params.versions }}
                     {{ $versionData := index (where .Site.Params.versions "linkVersion" .Section) 0 }}
