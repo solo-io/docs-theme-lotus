@@ -12,5 +12,5 @@
 
 {{ $newPath = strings.TrimLeft "/" $newPath }}
 {{ range .Site.Params.versions }}
-    <li><a class="dropdown-item" href="{{ .url }}/{{ $newPath }}">{{ .version }}</a></li>
+    <li><a class="dropdown-item" href="{{ $baseurl }}/{{ .linkVersion }}/{{ $newPath }}">{{ .dropdown }}</a></li>
 {{ end }}

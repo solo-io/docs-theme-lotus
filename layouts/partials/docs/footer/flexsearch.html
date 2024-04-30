@@ -142,27 +142,32 @@
 
   {{ $list := .Site.Pages }}
 
-  {{ range $index, $element := $list -}}
-      {{ $subversion := or .Params.Params.subversion "" }}
-      {{ range .Ancestors -}}
-          {{ if .Params.Params.subversion }}
-              {{ $subversion = .Params.Params.subversion }}
-          {{ end }}
-      {{ end -}}
-      getIndex("{{ .Section }}-{{ $subversion }}").add(
-          {
-              id: {{ $index }},
-              href: "{{ .RelPermalink }}",
-              title: {{ .Title }},
-              {{ with .Description -}}
-                  description: {{ . }},
-              {{ else -}}
-                  description: {{ .Summary | htmlUnescape | plainify }},
-              {{ end -}}
-              content: ""
-          }
-      );
-  {{ end -}}
+    {{ range $index, $element := $list -}}
+        {{ $subversion := or .Params.Params.subversion "" }}
+        {{ range .Ancestors -}}
+            {{ if .Params.Params.subversion }}
+                {{ $subversion = .Params.Params.subversion }}
+            {{ end }}
+        {{ end -}}
+        getIndex("{{ .Section }}-{{ $subversion }}").add(
+            {
+                id: {{ $index }},
+                href: "{{ .RelPermalink }}",
+                title: {{ .Title }},
+                {{ with .Description -}}
+                    description: {{ . }},
+                {{ else -}}
+                    description: {{ .Summary | htmlUnescape | plainify }},
+                {{ end -}}
+                {{ $keywords := "" -}}
+                {{ with .Keywords -}}
+                    {{ $keywords = delimit . ", " }}
+                {{ end -}}
+                content: "{{ $keywords }}" 
+                // content: {{ .Content | htmlUnescape | plainify }}
+            }
+        );
+    {{ end -}}
 
   const versionSubversionMap = {};
   {{ if .Site.Params.versions }}
