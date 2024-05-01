@@ -3,14 +3,20 @@
 {{ $newPath := strings.Replace $path $version "" -1 }}
 {{ $baseurl := .Site.BaseURL }}
 
+{{/* If current version uses a subversion, strip it from the path */}}
 {{ $versionTrimmed := trim $version "/" }}
 {{ $versionData := index (where .Site.Params.versions "linkVersion" $versionTrimmed) 0 }}
-
 {{ range $versionData.subversions }}
     {{ $newPath = strings.Replace $newPath .id "" 1 }}
 {{ end }}
 
 {{ $newPath = strings.TrimLeft "/" $newPath }}
 {{ range .Site.Params.versions }}
-    <li><a class="dropdown-item" href="{{ $baseurl }}/{{ .linkVersion }}/{{ $newPath }}">{{ .dropdown }}</a></li>
+    {{ $newSubversion := "" }}
+    {{ if .subversions }}
+        {{ $subObj := index (where .subversions "dropdownDefault" true) 0 }}
+        {{ if not $subObj }}{{ $subObj = index .subversions 0 }}{{ end }}
+        {{ $newSubversion = print "/" $subObj.id }}
+    {{ end }}
+    <li><a class="dropdown-item" href="{{ $baseurl }}/{{ .linkVersion }}{{ $newSubversion }}/{{ $newPath }}">{{ .dropdown }}</a></li>
 {{ end }}
