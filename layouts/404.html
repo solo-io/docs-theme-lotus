@@ -3,6 +3,7 @@
         <div class="px-1">
             <h1 class="text-center">Page not found :(</h1>
             <h4 class="text-center">The page you are looking for doesn't exist or has been moved.</h4>
+            <h4 class="text-center">Redirecting to root...</h4>
         </div>
         <div class="px-1">            
             <a href="{{ "" | relURL }}"><i class="material-icons size-48 me-0">home</i></a>
@@ -11,7 +12,27 @@
       </div>
       <script>
         setTimeout(function(){
-          window.location.replace("{{ "" | relURL }}");
-        }, 2000)
+          var versionsMap = {};
+          {{ if .Site.Params.versions }}
+            {{ range .Site.Params.versions }}
+              {{ $version := .linkVersion }}
+              versionsMap["{{ $version }}"] = [];
+              {{ if .subversions }}
+                {{ range .subversions }}
+                versionsMap["{{ $version }}"].push("{{ .id }}");
+                {{ end }}
+              {{ end }}
+            {{ end }}
+          {{ end }}
+
+          var urlParts = window.location.pathname.split('/')
+          var version = urlParts.find(function(part){ return !!versionsMap[part] });
+          var subversion = !!version && urlParts.find(function(part){ return !!versionsMap[version].includes(part); });
+
+          var url = "{{ "" | relURL }}";
+          if(version) url += version+"/";
+          if(subversion) url += subversion+"/";
+          window.location.replace(url);
+        }, 1000)
       </script>
 {{ end }}
