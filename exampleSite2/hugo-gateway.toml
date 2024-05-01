@@ -70,7 +70,12 @@ searchSectionsIndex = []
   version = "main"
   linkVersion = "main"
   url = "https://docs.solo.io/gloo-mesh-core/main/"
-  subversions = [ "v1", "v4" ]
+[[params.versions.subversions]]
+  id = "v1"
+  label = "Version 1"
+[[params.versions.subversions]]
+  id = "v4"
+  label = "Version 4"
 
 [[params.versions]]
   version = "2.5 (latest)"

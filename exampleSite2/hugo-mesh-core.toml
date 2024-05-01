@@ -68,12 +68,20 @@ searchSectionsIndex = []
 
 [[params.versions]]
   version = "main"
+  dropdown = "main"
   linkVersion = "main"
   url = "http://localhost:1313/main/v1/"
-  subversions = [ "v1", "v4" ]
+[[params.versions.subversions]]
+  id = "v1"
+  label = "K8s Gateway API"
+[[params.versions.subversions]]
+  id = "v4"
+  label = "Classic"
+  dropdownDefault = true
 
 [[params.versions]]
   version = "2.5 (latest)"
+  dropdown = "2.5 (latest)"
   linkVersion = "latest"
   url = "http://localhost:1313/latest/"
 
