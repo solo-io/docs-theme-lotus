@@ -30,9 +30,9 @@
           var subversion = !!version && urlParts.find(function(part){ return !!versionsMap[version].includes(part); });
 
           var url = "{{ "" | relURL }}";
-          if(version) url += version+"/";
-          if(subversion) url += subversion+"/";
-          window.location.replace(url);
+          if(version) url += "/"+version;
+          if(subversion) url += "/"+subversion;
+          window.location.replace(url.replace('//', '/'));
         }, 1000)
       </script>
 {{ end }}
