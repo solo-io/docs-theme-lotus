@@ -13,7 +13,7 @@
             {{- $urlParts := strings.Split .Page.RelPermalink "/" -}}
             {{- $version := index $urlParts 1 -}}
             {{ $versionData := index (where .Site.Params.versions "linkVersion" $version) 0 }}
-            {{ $showSidebar = and $versionData.subversions (index $urlParts 2) }}
+            {{ $showSidebar = or (not $versionData.subversions) (index $urlParts 2) }}
             {{ if and $versionData.subversions $showSidebar }}
                 {{- $subversion := index $urlParts 2 -}}
                 <div class="sidebar-subversion-btn-group">
