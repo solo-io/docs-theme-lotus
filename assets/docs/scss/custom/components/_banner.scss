@@ -84,7 +84,6 @@
     --alert-dark-border-color: var(--gray-200);
 }
 
-
 .alert {
     
     background-color: var(--alert-info-bg);
@@ -101,8 +100,9 @@
     box-sizing: border-box;
     //border-bottom: 1px solid #ddd;
     //background-color: var(--emerald-50-hsl)
-  }
   
-  .banner p {
+  p {
     margin: 0;
   }
+  
+}
