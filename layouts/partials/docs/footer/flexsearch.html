@@ -92,6 +92,9 @@
       searchSectionsIndex: siteFlexJson.searchsectionsindex ?? [],
     };
 
+    /////////////////////////
+    // Create Index
+    /////////////////////////
     var indexSectionMap = {};
     function getIndex(section) {
       if (!indexSectionMap[section]) {
@@ -103,8 +106,8 @@
           optimize: siteFlexConfig.optimize,
           document: {
             id: 'id',
-            store: ["href", "title", "description"],
-            index: ["title", "description", "content"]
+            store: ["href", "title", "description", "content"],
+            index: ["title", "description", "keywords", "content"]
           }
         });
       }
@@ -137,17 +140,10 @@
       return curSection+'-'+curSubversion;
     }
 
+    /////////////////////////
+    // Populate Index
+    /////////////////////////
 
-  // Not yet supported: https://github.com/nextapps-de/flexsearch#complex-documents
-
-
-  // var docs = [
-  //     {{ range $index, $page := (where .Site.Pages "Section" "docs") -}}
-  //        { id: {{ $index }}, href: {{ .Permalink }}, title: {{ .Title }}, description: {{ .Params.description }}, content: {{ .Content }} },
-  //     {{ end -}}
-  // ];
-
-  function populateIndex() {
     // https://discourse.gohugo.io/t/range-length-or-last-element/3803/2
 
     // {{ $list := slice }}
@@ -165,98 +161,106 @@
     //     {{- $list = (where .Site.Pages "Section" $version) }}
     // {{- end }}
 
-      const indexDocItemList = [];
+    const indexDocItemList = [];
 
-      {{ $list := .Site.Pages }}
-      {{ range $index, $element := $list -}}
-          {{ $subversion := or .Params.Params.subversion "" }}
-          {{ range .Ancestors -}}
-              {{ if .Params.Params.subversion }}
-                  {{ $subversion = .Params.Params.subversion }}
-              {{ end }}
-          {{ end -}}
+    {{ $list := .Site.Pages }}
+    {{ range $index, $element := $list -}}
+        {{ $subversion := or .Params.Params.subversion "" }}
+        {{ range .Ancestors -}}
+            {{ if .Params.Params.subversion }}
+                {{ $subversion = .Params.Params.subversion }}
+            {{ end }}
+        {{ end -}}
 
-          {{ $description := "" }}
-          {{ with .Description -}}
-              {{ $description = . }}
-          {{ else -}}
-              {{ $description = .Summary | htmlUnescape | plainify }}
-          {{ end -}}
+        {{ $description := "" }}
+        {{ with .Description -}}
+            {{ $description = . }}
+        {{ else -}}
+            {{ $description = .Summary | htmlUnescape | plainify }}
+        {{ end -}}
 
-          {{ $keywords := "" -}}
-          {{ with .Keywords -}}
-              {{ $keywords = delimit . ", " }}
-          {{ end -}}
+        {{ $keywords := "" -}}
+        {{ with .Keywords -}}
+            {{ $keywords = delimit . ", " }}
+        {{ end -}}
 
-          indexDocItemList.push([
-              "{{ .Section }}-{{ $subversion }}",
-              {
-                  id: {{ $index }},
-                  href: "{{ .RelPermalink }}",
-                  title: {{ .Title }},
-                  description: {{ $description }},
-                  // content: "{{ $keywords }}"
-                  content: {{ .Content | htmlUnescape | plainify }}
-              }
-          ]);
-      {{ end -}}
+        indexDocItemList.push([
+            "{{ .Section }}-{{ $subversion }}",
+            {
+                id: {{ $index }},
+                href: "{{ .RelPermalink }}",
+                title: {{ .Title }},
+                description: {{ $description }},
+                keywords: "{{ $keywords }}",
+                content: {{ .Content | htmlUnescape | plainify }}
+            }
+        ]);
+    {{ end -}}
 
-      const currentPageIndexId = getIndexIdOfCurrentPage();
-      for(const [indexId, doc] of indexDocItemList) {
-        if(indexId != currentPageIndexId) continue;
-        // Words that are to long cause flexsearch to freeze, so remove them from text we give to index
-        doc.content = doc.content.replaceAll(/\w{40,}/g, '-');
-        getIndex(indexId).add(doc);
+    const currentPageIndexId = getIndexIdOfCurrentPage();
+    for(const [indexId, doc] of indexDocItemList) {
+      if(indexId != currentPageIndexId) continue;
+      // Words that are to long cause flexsearch to freeze, so remove them from text we give to index
+      doc.content = doc.content.replaceAll(/\w{40,}/g, '-');
+      getIndex(indexId).add(doc);
+    }
+
+    /////////////////////////
+    // Search Logic
+    /////////////////////////
+    search.addEventListener('input', find_results, true);
+
+    function find_results(){
+      var searchQuery = this.value;
+
+      suggestions.innerHTML = "";
+      suggestions.classList.remove('d-none');
+
+      // inform user of search query minimum character requirement
+      const minlength = siteFlexConfig.minLength;
+      if (searchQuery.length < minlength) {
+        const minCharMessage = document.createElement('div')
+        minCharMessage.innerHTML = `Please type at least <strong>${minlength}</strong> characters`
+        minCharMessage.classList.add("suggestion__no-results");
+        suggestions.appendChild(minCharMessage);
+        return;
       }
-  }
-  populateIndex();
 
-  search.addEventListener('input', find_results, true);
-
-  function find_results(){
-    var searchQuery = this.value;
-
-    suggestions.innerHTML = "";
-    suggestions.classList.remove('d-none');
-
-    // inform user of search query minimum character requirement
-    const minlength = siteFlexConfig.minLength;
-    if (searchQuery.length < minlength) {
-      const minCharMessage = document.createElement('div')
-      minCharMessage.innerHTML = `Please type at least <strong>${minlength}</strong> characters`
-      minCharMessage.classList.add("suggestion__no-results");
-      suggestions.appendChild(minCharMessage);
-      return;
+      var index = getIndex(getIndexIdOfCurrentPage());
+      var results = index.search(searchQuery, { limit: siteFlexConfig.maxResult, enrich: true });
+      show_results(results, searchQuery);
     }
 
-    var index = getIndex(getIndexIdOfCurrentPage());
-    var results = index.search(searchQuery, { limit: siteFlexConfig.maxResult, enrich: true });
-    show_results(results, searchQuery);
-  }
-  function show_results(results, searchQuery){
-    // flatten results since index.search() returns results for each indexed field
-    const flatResults = new Map(); // keyed by href to dedupe results
-    for (const result of results.flatMap(r => r.result)) {
-      if (flatResults.has(result.doc.href)) continue;
-      flatResults.set(result.doc.href, result.doc);
-    }
+    function show_results(results, searchQuery){
+      // flatten results since index.search() returns results for each indexed field
+      const flatResults = new Map(); // keyed by href to dedupe results
+      for (const result of results.flatMap(r => r.result)) {
+        if (flatResults.has(result.doc.href)) continue;
+        flatResults.set(result.doc.href, result.doc);
+      }
 
-    suggestions.innerHTML = "";
-    suggestions.classList.remove('d-none');
+      suggestions.innerHTML = "";
+      suggestions.classList.remove('d-none');
 
       // inform user that no results were found
       if (flatResults.size === 0 && searchQuery) {
           const noResultsMessage = document.createElement('div')
-          noResultsMessage.innerHTML = {{ i18n "search_no_results" | default "No results for" }} + ` "<strong>${searchQuery}</strong>"`
+          noResultsMessage.innerHTML = getNoResultsMessage(searchQuery);
           noResultsMessage.classList.add("suggestion__no-results");
           suggestions.appendChild(noResultsMessage);
           return;
       }
 
-    // construct a list of suggestions
-    for(const [href, doc] of flatResults) {
+      // construct a list of suggestions
+      for(const [href, doc] of flatResults) {
+        suggestions.appendChild( createSuggestion(doc, href, searchQuery) );
+        if(suggestions.childElementCount == siteFlexConfig.maxResult) break;
+      }
+    }
+
+    function createSuggestion(doc, href, searchQuery) {
+      const queryWords = searchQuery.trim().split(' ');
       const entry = document.createElement('div');
-      suggestions.appendChild(entry);
 
       const a = document.createElement('a');
       a.href = href;
@@ -268,14 +272,79 @@
       a.appendChild(title);
 
       const description = document.createElement('span');
-      description.textContent = doc.description;
+      description.innerHTML = getSuggestionDescription(doc, queryWords);
       description.classList.add("suggestion__description");
       a.appendChild(description);
 
-      suggestions.appendChild(entry);
-
-      if(suggestions.childElementCount == siteFlexConfig.maxResult) break;
+      return entry;
     }
-  }
+
+    function getSuggestionDescription(doc, queryWords) {
+      // For the description, we should do the following:
+      // - If the `doc` description contains all search terms, show that (and highlight them all in that message)
+      // - otherwise try to find them in body, and highlight setence fragment of first instance when found
+      // - else if none found in body (perhaps word only in title/keywords, or regex didn't find it), fallback to description (and highlight any that are found)
+      let desc = doc.description;
+      if(stringContainsAllFuzzyWords(doc.description, queryWords)) {
+        desc = highlightFuzzyWordsInString(doc.description, queryWords);
+      } else {
+        // Find indiviudal segments that contain the search terms
+        const matchedSegments = queryWords.map(queryWord=>{
+          const match = doc.content.match(new RegExp(`(\\W?)(\\w*${queryWord}\\w*)(\\W?)`, 'i'));
+          if(match) {
+            try {
+              let string = '';
+              const { [0]:fullmatch, index } = match;
+              if(index > 0) {
+                // we want words before the matched word - ignore the earliest one though, since it will likely not be a full word.
+                string += doc.content.substring(index-30, index).trim().split(' ').slice(1).join(' ');
+              }
+              string += fullmatch;
+    
+              const indexAfter = index + fullmatch.length;
+              // we want words after the matched word - ignore the last one though, since it will likely not be a full word.
+              string += doc.content.substring(indexAfter, indexAfter+30).trim().split(' ').slice(0, -1).join(' ');
+    
+              return string.trim();
+            }
+            catch(e){}
+          }
+          return null;
+        }).filter(s=>!!s);
+
+        // See if one of the returned segments contains all search terms, and if so return only that one with all words highlighted in it
+        const singleSegmentIfOneExists = matchedSegments.find(segment=>stringContainsAllFuzzyWords(segment, queryWords));
+        if(!matchedSegments.length) {
+          desc = highlightFuzzyWordsInString(doc.description, queryWords);
+        }
+        else if(singleSegmentIfOneExists) {
+          desc = highlightFuzzyWordsInString(singleSegmentIfOneExists, queryWords);
+        }
+        else {
+          desc = matchedSegments.map(str=>highlightFuzzyWordsInString(str, queryWords)).join('<hr />');
+        }
+      }
+      return desc;
+    }
+
+    function stringContainsAllFuzzyWords(string, words) {
+      string = string.toLowerCase();
+      return words.every(w=>string.includes(w.toLowerCase()))
+    }
+
+    function highlightFuzzyWordsInString(string, words) {
+      words.forEach(queryWord=>{
+        const match = string.match(new RegExp(`(\\W?)(\\w*${queryWord}\\w*)(\\W?)`, 'i'));
+        if(match) {
+          const { [0]:fullmatch, [1]:pre, [2]:word, [3]:suff, index } = match;
+          string = string.substring(0, index) + `${pre}<b>${word}</b>${suff}` + string.substring(index+fullmatch.length);
+        }
+      });
+      return string;
+    }
+
+    function getNoResultsMessage(searchQuery) {
+      return {{ i18n "search_no_results" | default "No results for" }} + ` "<strong>${searchQuery}</strong>"`;
+    }
   }());
 </script>
