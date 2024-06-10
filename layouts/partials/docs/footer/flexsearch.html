@@ -305,7 +305,7 @@
               // we want words after the matched word - ignore the last one though, since it will likely not be a full word.
               string += doc.content.substring(indexAfter, indexAfter+30).trim().split(' ').slice(0, -1).join(' ');
     
-              return string.trim();
+              return '…' + string.trim() + '…';
             }
             catch(e){}
           }
