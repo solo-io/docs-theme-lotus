@@ -14,7 +14,7 @@
       flexsearchContainer.addEventListener('shown.bs.collapse', function () {
           search.focus();
       });
-      // hide search collapse containder by clicking outside (except top header)
+      // hide search collapse container by clicking outside (except top header)
       var topHeader = document.getElementById("top-header");
       document.addEventListener('click', function(elem) {
           if (!flexsearchContainer.contains(elem.target) && !topHeader.contains(elem.target))
@@ -38,13 +38,13 @@
       }
   };
 
+  // Clears suggestion when clicking out
   document.addEventListener('click', function(event) {
-    var isClickInsideElement = suggestions.contains(event.target);
-
+    var isClickInsideElement = suggestions.contains(event.target) || flexsearchContainer.contains(event.target);
     if (!isClickInsideElement) {
       suggestions.classList.add('d-none');
+      search.value = '';
     }
-
   });
 
   /*
