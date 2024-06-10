@@ -231,6 +231,7 @@
 
 .suggestion__description,
 .suggestion__no-results {
+    display: block;
     color: var(--flexsearch-suggestion-desc-color);
 }
 
