@@ -39,12 +39,11 @@
   };
 
   document.addEventListener('click', function(event) {
+    var isClickInsideElement = suggestions.contains(event.target);
 
-  var isClickInsideElement = suggestions.contains(event.target);
-
-  if (!isClickInsideElement) {
+    if (!isClickInsideElement) {
       suggestions.classList.add('d-none');
-  }
+    }
 
   });
 
@@ -82,29 +81,61 @@
   - https://github.com/nextapps-de/flexsearch#index-documents-field-search
   - https://raw.githack.com/nextapps-de/flexsearch/master/demo/autocomplete.html
   */
-
   (function(){
+    const siteFlexJson = JSON.parse({{ .Site.Params.flexsearch | jsonify }});
+    const siteFlexConfig = {
+      enabled: siteFlexJson.enabled ?? true,
+      tokenize: siteFlexJson.tokenize ?? "full",
+      minLength: siteFlexJson.minquerychar ?? 0,
+      cache: siteFlexJson.cache ?? 100,
+      maxResult: siteFlexJson.maxresult ?? 5,
+      searchSectionsIndex: siteFlexJson.searchsectionsindex ?? [],
+    };
 
-      var indexSectionMap = {};
-      function getIndex(section) {
-          if (!indexSectionMap[section]) {
-              indexSectionMap[section] = new FlexSearch.Document({
-                  // charset: "latin:default",
-                  tokenize: {{ .Site.Params.flexsearch.tokenize | default "forward" }},
-                  minlength: {{ .Site.Params.flexsearch.minQueryChar | default 0}},
-                  cache: {{ .Site.Params.flexsearch.cache | default 100 }},
-                  optimize: {{ .Site.Params.flexsearch.optimize | default true }},
-                  document: {
-                  id: 'id',
-                  store: [
-                      "href", "title", "description"
-                  ],
-                  index: ["title", "description", "content"]
-                  }
-              });
+    var indexSectionMap = {};
+    function getIndex(section) {
+      if (!indexSectionMap[section]) {
+        indexSectionMap[section] = new FlexSearch.Document({
+          // charset: "latin:default",
+          tokenize: siteFlexConfig.tokenize,
+          minlength: siteFlexConfig.minLength,
+          cache: siteFlexConfig.cache,
+          optimize: siteFlexConfig.optimize,
+          document: {
+            id: 'id',
+            store: ["href", "title", "description"],
+            index: ["title", "description", "content"]
           }
-          return indexSectionMap[section];
+        });
       }
+      return indexSectionMap[section];
+    }
+
+    /////////////////////////
+    // Index ID Gen
+    /////////////////////////
+    const versionSubversionMap = {};
+    {{ if .Site.Params.versions }}
+        {{ range .Site.Params.versions }}
+            {{ $version := .linkVersion }}
+            versionSubversionMap[{{$version}}] = [];
+            {{ if .subversions }}
+                {{ range .subversions }}
+                    versionSubversionMap[{{$version}}].push({{.id}});
+                {{ end }}
+            {{ end }}
+        {{ end }}
+    {{ end }}
+
+    function getIndexIdOfCurrentPage() {
+      // There doesn't seem to be a perfect way to detect "Section" via JS, but
+      // this should work by finding any cases where something in url exists in search index key
+      const curSection = window.location.pathname.replace(/^\//, '').split('/')
+          .find(part=>!!versionSubversionMap[part]) || "{{ .Site.Params.version }}" || 'main';
+      const curSubversion = window.location.pathname.replace(/^\//, '').split('/')
+          .find(part=>!!versionSubversionMap[curSection].includes(part)) || "";
+      return curSection+'-'+curSubversion;
+    }
 
 
   // Not yet supported: https://github.com/nextapps-de/flexsearch#complex-documents
@@ -112,142 +143,139 @@
 
   // var docs = [
   //     {{ range $index, $page := (where .Site.Pages "Section" "docs") -}}
-  //     {
-  //         id: {{ $index }},
-  //         href: {{ .Permalink }},
-  //         title: {{ .Title }},
-  //         description: {{ .Params.description }},
-  //         content: {{ .Content }}
-  //     },
+  //        { id: {{ $index }}, href: {{ .Permalink }}, title: {{ .Title }}, description: {{ .Params.description }}, content: {{ .Content }} },
   //     {{ end -}}
   // ];
 
+  function populateIndex() {
+    // https://discourse.gohugo.io/t/range-length-or-last-element/3803/2
 
-  // https://discourse.gohugo.io/t/range-length-or-last-element/3803/2
+    // {{ $list := slice }}
+    // {{- if and (isset .Site.Params.flexsearch "searchsectionsindex") (not (eq (len .Site.Params.flexsearch.searchSectionsIndex) 0)) }}
+    //     {{- if eq .Site.Params.docs.searchSectionsIndex "ALL" }}
+    //         {{- $list = .Site.Pages }}
+    //     {{- else }}
+    //         {{- $list = (where .Site.Pages "Type" "in" .Site.Params.flexsearch.searchSectionsIndex) }}
+    //     {{- if (in .Site.Params.flexsearch.searchSectionsIndex "HomePage") }}
+    //         {{ $list = $list | append .Site.Home }}
+    //     {{- end }}
+    //     {{- end }}
+    // {{- else }}
+    //     {{ $version := .Site.Params.version }}
+    //     {{- $list = (where .Site.Pages "Section" $version) }}
+    // {{- end }}
 
-  // {{ $list := slice }}
-  // {{- if and (isset .Site.Params.flexsearch "searchsectionsindex") (not (eq (len .Site.Params.flexsearch.searchSectionsIndex) 0)) }}
-  //     {{- if eq .Site.Params.docs.searchSectionsIndex "ALL" }}
-  //         {{- $list = .Site.Pages }}
-  //     {{- else }}
-  //         {{- $list = (where .Site.Pages "Type" "in" .Site.Params.flexsearch.searchSectionsIndex) }}
-  //     {{- if (in .Site.Params.flexsearch.searchSectionsIndex "HomePage") }}
-  //         {{ $list = $list | append .Site.Home }}
-  //     {{- end }}
-  //     {{- end }}
-  // {{- else }}
-  //     {{ $version := .Site.Params.version }}
-  //     {{- $list = (where .Site.Pages "Section" $version) }}
-  // {{- end }}
+      const indexDocItemList = [];
 
-  {{ $list := .Site.Pages }}
-
-    {{ range $index, $element := $list -}}
-        {{ $subversion := or .Params.Params.subversion "" }}
-        {{ range .Ancestors -}}
-            {{ if .Params.Params.subversion }}
-                {{ $subversion = .Params.Params.subversion }}
-            {{ end }}
-        {{ end -}}
-        getIndex("{{ .Section }}-{{ $subversion }}").add(
-            {
-                id: {{ $index }},
-                href: "{{ .RelPermalink }}",
-                title: {{ .Title }},
-                {{ with .Description -}}
-                    description: {{ . }},
-                {{ else -}}
-                    description: {{ .Summary | htmlUnescape | plainify }},
-                {{ end -}}
-                {{ $keywords := "" -}}
-                {{ with .Keywords -}}
-                    {{ $keywords = delimit . ", " }}
-                {{ end -}}
-                content: "{{ $keywords }}" 
-                // content: {{ .Content | htmlUnescape | plainify }}
-            }
-        );
-    {{ end -}}
-
-  const versionSubversionMap = {};
-  {{ if .Site.Params.versions }}
-      {{ range .Site.Params.versions }}
-          {{ $version := .linkVersion }}
-          versionSubversionMap[{{$version}}] = [];
-          {{ if .subversions }}
-              {{ range .subversions }}
-                  versionSubversionMap[{{$version}}].push({{.id}});
+      {{ $list := .Site.Pages }}
+      {{ range $index, $element := $list -}}
+          {{ $subversion := or .Params.Params.subversion "" }}
+          {{ range .Ancestors -}}
+              {{ if .Params.Params.subversion }}
+                  {{ $subversion = .Params.Params.subversion }}
               {{ end }}
-          {{ end }}
-      {{ end }}
-  {{ end }}
+          {{ end -}}
 
-  search.addEventListener('input', show_results, true);
+          {{ $description := "" }}
+          {{ with .Description -}}
+              {{ $description = . }}
+          {{ else -}}
+              {{ $description = .Summary | htmlUnescape | plainify }}
+          {{ end -}}
 
-  function show_results(){
-      const maxResult = {{ .Site.Params.flexsearch.maxResult | default 5}};
-      const minlength = {{ .Site.Params.flexsearch.minQueryChar | default 0}};
-      var searchQuery = this.value;
-      // There doesn't seem to be a perfect way to detect "Section" via JS, but
-      // this should work by finding any cases where something in url exists in search index key
-      const curSection = window.location.pathname.replace(/^\//, '').split('/')
-          .find(part=>!!versionSubversionMap[part]) || "{{ .Site.Params.version }}" || 'main';
-      const curSubversion = window.location.pathname.replace(/^\//, '').split('/')
-          .find(part=>!!versionSubversionMap[curSection].includes(part)) || "";
-      var index = getIndex(curSection+'-'+curSubversion);
-      var results = index.search(searchQuery, {limit: maxResult, enrich: true});
+          {{ $keywords := "" -}}
+          {{ with .Keywords -}}
+              {{ $keywords = delimit . ", " }}
+          {{ end -}}
 
-      // flatten results since index.search() returns results for each indexed field
-      const flatResults = new Map(); // keyed by href to dedupe results
-      for (const result of results.flatMap(r => r.result)) {
+          indexDocItemList.push([
+              "{{ .Section }}-{{ $subversion }}",
+              {
+                  id: {{ $index }},
+                  href: "{{ .RelPermalink }}",
+                  title: {{ .Title }},
+                  description: {{ $description }},
+                  // content: "{{ $keywords }}"
+                  content: {{ .Content | htmlUnescape | plainify }}
+              }
+          ]);
+      {{ end -}}
+
+      const currentPageIndexId = getIndexIdOfCurrentPage();
+      for(const [indexId, doc] of indexDocItemList) {
+        if(indexId != currentPageIndexId) continue;
+        // Words that are to long cause flexsearch to freeze, so remove them from text we give to index
+        doc.content = doc.content.replaceAll(/\w{40,}/g, '-');
+        getIndex(indexId).add(doc);
+      }
+  }
+  populateIndex();
+
+  search.addEventListener('input', find_results, true);
+
+  function find_results(){
+    var searchQuery = this.value;
+
+    suggestions.innerHTML = "";
+    suggestions.classList.remove('d-none');
+
+    // inform user of search query minimum character requirement
+    const minlength = siteFlexConfig.minLength;
+    if (searchQuery.length < minlength) {
+      const minCharMessage = document.createElement('div')
+      minCharMessage.innerHTML = `Please type at least <strong>${minlength}</strong> characters`
+      minCharMessage.classList.add("suggestion__no-results");
+      suggestions.appendChild(minCharMessage);
+      return;
+    }
+
+    var index = getIndex(getIndexIdOfCurrentPage());
+    var results = index.search(searchQuery, { limit: siteFlexConfig.maxResult, enrich: true });
+    show_results(results, searchQuery);
+  }
+  function show_results(results, searchQuery){
+    // flatten results since index.search() returns results for each indexed field
+    const flatResults = new Map(); // keyed by href to dedupe results
+    for (const result of results.flatMap(r => r.result)) {
       if (flatResults.has(result.doc.href)) continue;
       flatResults.set(result.doc.href, result.doc);
-      }
+    }
 
-      suggestions.innerHTML = "";
-      suggestions.classList.remove('d-none');
+    suggestions.innerHTML = "";
+    suggestions.classList.remove('d-none');
 
-      // inform user of search query minimum character requirement
-      if (searchQuery.length < minlength) {
-          const minCharMessage = document.createElement('div')
-          minCharMessage.innerHTML = `Please type at least <strong>${minlength}</strong> characters`
-          minCharMessage.classList.add("suggestion__no-results");
-          suggestions.appendChild(minCharMessage);
+      // inform user that no results were found
+      if (flatResults.size === 0 && searchQuery) {
+          const noResultsMessage = document.createElement('div')
+          noResultsMessage.innerHTML = {{ i18n "search_no_results" | default "No results for" }} + ` "<strong>${searchQuery}</strong>"`
+          noResultsMessage.classList.add("suggestion__no-results");
+          suggestions.appendChild(noResultsMessage);
           return;
-      } else {
-          // inform user that no results were found
-          if (flatResults.size === 0 && searchQuery) {
-              const noResultsMessage = document.createElement('div')
-              noResultsMessage.innerHTML = {{ i18n "search_no_results" | default "No results for" }} + ` "<strong>${searchQuery}</strong>"`
-              noResultsMessage.classList.add("suggestion__no-results");
-              suggestions.appendChild(noResultsMessage);
-              return;
-          }
       }
 
-      // construct a list of suggestions
-      for(const [href, doc] of flatResults) {
-          const entry = document.createElement('div');
-          suggestions.appendChild(entry);
+    // construct a list of suggestions
+    for(const [href, doc] of flatResults) {
+      const entry = document.createElement('div');
+      suggestions.appendChild(entry);
 
-          const a = document.createElement('a');
-          a.href = href;
-          entry.appendChild(a);
+      const a = document.createElement('a');
+      a.href = href;
+      entry.appendChild(a);
 
-          const title = document.createElement('span');
-          title.textContent = doc.title;
-          title.classList.add("suggestion__title");
-          a.appendChild(title);
+      const title = document.createElement('span');
+      title.textContent = doc.title;
+      title.classList.add("suggestion__title");
+      a.appendChild(title);
 
-          const description = document.createElement('span');
-          description.textContent = doc.description;
-          description.classList.add("suggestion__description");
-          a.appendChild(description);
+      const description = document.createElement('span');
+      description.textContent = doc.description;
+      description.classList.add("suggestion__description");
+      a.appendChild(description);
 
-          suggestions.appendChild(entry);
+      suggestions.appendChild(entry);
 
-          if(suggestions.childElementCount == maxResult) break;
-      }
+      if(suggestions.childElementCount == siteFlexConfig.maxResult) break;
+    }
   }
   }());
 </script>
