@@ -328,8 +328,9 @@
     }
 
     function stringContainsAllFuzzyWords(string, words) {
-      string = string.toLowerCase();
-      return words.every(w=>string.includes(w.toLowerCase()))
+      const clean = str => str.toLowerCase().replace('/', '');
+      string = clean(string);
+      return words.every(w=>string.includes(clean(w)))
     }
 
     function highlightFuzzyWordsInString(string, words) {
@@ -340,7 +341,12 @@
           string = string.substring(0, index) + `${pre}<b>${word}</b>${suff}` + string.substring(index+fullmatch.length);
         }
       });
-      return string;
+      return cleanHugoFormatStringForDesc(string);
+    }
+
+    function cleanHugoFormatStringForDesc(string) {
+      // replaces the `link` text that appears right after hugo headers
+      return string.replace(/ link([A-Z])/i, ' $1');
     }
 
     function getNoResultsMessage(searchQuery) {
