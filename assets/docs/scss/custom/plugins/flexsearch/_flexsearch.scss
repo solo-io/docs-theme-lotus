@@ -231,7 +231,7 @@
 
 .suggestion__description,
 .suggestion__no-results {
-    display: block;
+    display: block !important;
     color: var(--flexsearch-suggestion-desc-color);
 }
 

@@ -294,18 +294,35 @@
           if(match) {
             try {
               let string = '';
-              const { [0]:fullmatch, index } = match;
+              const { [0]:fullmatch, [1]:pre, index } = match;
+              let preSegment = '';
+              let preChunk = 20; // check this many characters before the word
               if(index > 0) {
-                // we want words before the matched word - ignore the earliest one though, since it will likely not be a full word.
-                string += doc.content.substring(index-30, index).trim().split(' ').slice(1).join(' ');
+                // -2 and extra `pre` at end are need for sentence detection to properly work, and should be removed after if test don't catch them
+                preSegment = doc.content.substring(index-preChunk-2, index).replace(/\s/g, ' ')+pre;
+                if(preSegment.indexOf('. ') > -1) {
+                  preSegment = preSegment.split('. ')[1];
+                } else {
+                  // remove extra 2 we added in front to confirm there was a sentence end right before
+                  preSegment = preSegment.substring(2);
+                  // we want words before the matched word - ignore the earliest one though, since it will likely not be a full word.
+                  preSegment = preSegment.split(' ').slice(1).join(' ');
+                  // show an ellipsis since we didn't detect a sentence ending
+                  preSegment = '…' + preSegment.trimStart();
+                }
+                // remove the ending space we added to let sentence end detection work
+                if(pre) preSegment = preSegment.replace(new RegExp(pre+'$'), '');
               }
+              string += preSegment;
               string += fullmatch;
     
               const indexAfter = index + fullmatch.length;
+              let suffChunk = 40+(preChunk-preSegment.length); // check this many characters after the word
               // we want words after the matched word - ignore the last one though, since it will likely not be a full word.
-              string += doc.content.substring(indexAfter, indexAfter+30).trim().split(' ').slice(0, -1).join(' ');
-    
-              return '…' + string.trim() + '…';
+              string += doc.content.substring(indexAfter, indexAfter+suffChunk).split(' ').slice(0, -1).join(' ');
+              string = string.trimEnd() + '…';
+
+              return string;
             }
             catch(e){}
           }
@@ -328,8 +345,9 @@
     }
 
     function stringContainsAllFuzzyWords(string, words) {
-      string = string.toLowerCase();
-      return words.every(w=>string.includes(w.toLowerCase()))
+      const clean = str => str.toLowerCase().replace('/', '');
+      string = clean(string);
+      return words.every(w=>string.includes(clean(w)))
     }
 
     function highlightFuzzyWordsInString(string, words) {
@@ -340,7 +358,12 @@
           string = string.substring(0, index) + `${pre}<b>${word}</b>${suff}` + string.substring(index+fullmatch.length);
         }
       });
-      return string;
+      return cleanHugoFormatStringForDesc(string);
+    }
+
+    function cleanHugoFormatStringForDesc(string) {
+      // replaces the `link` text that appears right after hugo headers
+      return string.replace(/ link([A-Z])/i, ' $1');
     }
 
     function getNoResultsMessage(searchQuery) {
