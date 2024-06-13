@@ -226,11 +226,13 @@
 
 .suggestion__title {
     font-weight: 700;
+    word-break: break-word;
     color: var(--flexsearch-suggestion-title-color);
 }
 
 .suggestion__description,
 .suggestion__no-results {
+    word-break: break-word;
     display: block !important;
     color: var(--flexsearch-suggestion-desc-color);
 }

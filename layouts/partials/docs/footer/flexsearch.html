@@ -58,6 +58,16 @@
       {{- with .Keywords -}}
           {{- $keywords = delimit . ", " -}}
       {{- end -}}
+
+      {{- $content := .Content -}}
+			{{/*  Unescape html so we can run "plainify" to remove it completely  */}}
+      {{- $content = $content | htmlUnescape -}}
+			{{/*  Removes the heading id attribute (hidden) "link" text  */}}
+      {{- $content = replaceRE `<a href="#[\w-]+" class="anchor" aria-hidden="true"><i class="material-icons align-middle">link<\/i><\/a>` "" $content -}}
+			{{/*  Remove all html & markdown formatting  */}}
+      {{- $content = $content | plainify -}}
+			{{/*  Words that are to long cause flexsearch to freeze, so remove them from text we give to index  */}}
+      {{- $content = replaceRE `\w{40,}` "-" $content -}}
   
       {{- $indexEntry := newScratch -}}
       {{- $indexEntry.Set "id" $index -}}
@@ -65,8 +75,9 @@
       {{- $indexEntry.Set "title" .Title -}}
       {{- $indexEntry.Set "description" $description -}}
       {{- $indexEntry.Set "keywords" $keywords -}}
-      {{- $indexEntry.Set "content" (.Content | htmlUnescape | plainify) -}}
-  
+      {{- $indexEntry.Set "content" $content -}}
+
+
       {{- $indexKey := printf "%s-%s" .Section $subversion -}}
       {{- $indexVersionMap.Add $indexKey (slice $indexEntry.Values) -}}
   {{- end -}}

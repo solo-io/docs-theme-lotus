@@ -8,8 +8,6 @@ const flexsearchSiteParams = JSON.parse(params.siteParamsFlexsearch), // .Site.P
   indexVersionMap = JSON.parse(params.index),
   i18nSearchNoResults = params.i18nSearchNoResults;
 
-console.log("ibndex", indexVersionMap);
-
 // Setup config
 const siteFlexConfig = {
   enabled: flexsearchSiteParams.enabled ?? true,
@@ -138,7 +136,6 @@ Source:
     // this should work by finding any cases where something in url exists in search index key
     const curSection = urlParts.find((part) => !!versionSubversionMap[part]) || siteVersion || "main";
     const curSubversion = urlParts.find((part) => !!versionSubversionMap[curSection]?.includes(part)) || "";
-    console.log("sub", curSection, curSubversion, urlParts, versionSubversionMap);
     return curSection + "-" + curSubversion;
   }
 
@@ -149,11 +146,8 @@ Source:
   /* `indexVersionMap` is generated via hugo inside flexsearch.html and passed into here */
 
   const currentPageIndexId = getIndexIdOfCurrentPage();
-  const indexEntriesForCurrentVersion = indexVersionMap[currentPageIndexId];
-  for (const docIn of indexEntriesForCurrentVersion) {
-    const doc = JSON.parse(JSON.stringify(docIn)); // create a copy
-    // Words that are to long cause flexsearch to freeze, so remove them from text we give to index
-    doc.content = doc.content.replaceAll(/\w{40,}/g, "-");
+  const indexEntriesForCurrentVersion = indexVersionMap[currentPageIndexId] ?? [];
+  for (const doc of indexEntriesForCurrentVersion) {
     getIndex(currentPageIndexId).add(doc);
   }
 
@@ -197,7 +191,7 @@ Source:
     // inform user that no results were found
     if (flatResults.size === 0 && searchQuery) {
       const noResultsMessage = document.createElement("div");
-      noResultsMessage.innerHTML = getNoResultsMessage(searchQuery);
+      noResultsMessage.innerHTML = `${i18nSearchNoResults} "<strong>${searchQuery}</strong>"`;
       noResultsMessage.classList.add("suggestion__no-results");
       suggestions.appendChild(noResultsMessage);
       return;
@@ -316,15 +310,6 @@ Source:
           string.substring(0, index) + `${pre}<b>${word}</b>${suff}` + string.substring(index + fullmatch.length);
       }
     });
-    return cleanHugoFormatStringForDesc(string);
-  }
-
-  function cleanHugoFormatStringForDesc(string) {
-    // replaces the `link` text that appears right after hugo headers
-    return string.replace(/ link([A-Z])/i, " $1");
-  }
-
-  function getNoResultsMessage(searchQuery) {
-    return `${i18nSearchNoResults} "<strong>${searchQuery}</strong>"`;
+    return string;
   }
 })();
