@@ -76,7 +76,7 @@
             height: 72px;
             > a {
                 text-transform: uppercase;
-                font-weight: bold;
+                font-weight: 500;
                 flex-grow: 1;
                 transition: all 0.3s ease;
                 &:focus {
@@ -101,7 +101,7 @@
             padding: 16px 0 16px 10px;
             .header-menu {
                 span {
-                    font-weight: bold;
+                    font-weight: 500;
                     font-size: 14px;
                     padding: 15px 20px 5px 20px;
                     display: inline-block;
@@ -151,6 +151,7 @@
                     }
                     &.sidebar-nested-link {
                         align-items: normal;
+                        font-size: 15px;
                     }
                 }
                 a:hover,
@@ -163,6 +164,7 @@
                 &.active {
                     i {
                         background-color: var(--sidebar-menu-active-bg);
+                        font-weight: 500;
                     }
                 }
                 &.no-icon {
@@ -181,10 +183,19 @@
             }
 
             .sidebar-root-link {
-                font-size: 1rem;
+                //font-size: 1.2rem;
+                font-weight: 400;
+                font-size: 16px;
+                
             }
 
             .sidebar-dropdown {
+
+                button {
+                    font-weight: 400;
+                    font-size: 16px;
+                }
+
                 &.no-icon {
                     > button:after {
                         top: inherit !important;
@@ -194,7 +205,7 @@
                     content: "\e5cc" !important;
                     color: var(--sidebar-text-color);
                     font-family: 'Material Symbols Outlined';
-                    font-weight: 500;
+                    font-weight: 400;
                     font-size: 22px;
                     position: absolute;
                     right: 15px;
@@ -212,7 +223,8 @@
                         }
                     }
                     button {
-                        font-size: 14px;
+                        font-size: 15px;
+                        font-weight: 400;
                         &:before {
                             content: var(--sidebar-directory-icon);
                             color: var(--sidebar-text-color);
@@ -245,9 +257,9 @@
                         padding: 3px 0;
                         li {
                             padding-left: 15px;
-                            font-size: 14px;
+                            font-size: 13px;
                             a {
-                                font-weight: 400;
+                                font-weight: 350;
                                 &:before {
                                     content: var(--sidebar-file-icon);
                                     color: var(--sidebar-text-color);
@@ -309,7 +321,7 @@
         .sidebar-brand > a,
         .sidebar-menu li a {
             color: var(--sidebar-text-color);
-            font-weight: 600;
+            font-weight: 300;
         }
         // .sidebar-menu li:hover > a,
         .sidebar-menu li.current > a,
@@ -325,7 +337,7 @@
         }
 
         .sidebar-menu li.current > a {
-            font-weight: 600 !important;
+            font-weight: bold !important;
             background-color: var(--sidebar-menu-active-bg);
             border-right: 3px solid var(--primary);
             border-radius: 4px 0 0 4px;
@@ -335,6 +347,7 @@
         // .sidebar-menu li:hover > button,
         .sidebar-menu .sidebar-dropdown.current > button {
             color: var(--sidebar-primary) !important;
+            font-weight: bold;
         }
 
         .sidebar-brand {
