@@ -12,6 +12,7 @@
 
 // Default Table
 table {
+    
     td {
         border-top: 1px solid var(--card-border-color);
     }
@@ -35,7 +36,7 @@ table {
     --bs-table-hover-bg: var(--table-hover-bg);
 
     color: var(--text-default);
-    font-size: 0.875rem;
+    font-size: 1rem;
     border-collapse: separate;
     border-spacing: 0;
 
@@ -50,10 +51,16 @@ table {
         td {
             border-top: inherit;
             border-bottom-width: 1px;
+            word-wrap: break-word;
+            word-break: break-word;
+            white-space: normal;
         }
-
         td:first-child {
+            white-space: nowrap;
             border-left-width: 1px;
+        }
+        td:nth-child(2) {
+            white-space: nowrap;
         }
 
         td:last-child {
