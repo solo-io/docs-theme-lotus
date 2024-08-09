@@ -82,6 +82,7 @@
                                                 <div class="sidebar-submenu {{ if $active }}d-block{{ end }}">
                                                     <ul>
                                                         {{ range .Pages }}
+                                                         {{ if not .Params.hidden }}
                                                             {{ $active := in $currentPage.RelPermalink .RelPermalink }}
                                                             {{ if .IsSection }}
                                                                 <li class="sidebar-dropdown nested {{ if eq .Site.Params.docs.sidebarIcons true -}}{{ else }}no-icon{{ end }} {{ if $active }}current active{{ end }}">
@@ -94,6 +95,7 @@
                                                                     <div class="sidebar-submenu {{ if $active }}d-block{{ end }}">
                                                                         <ul>
                                                                             {{ range .Pages }}
+                                                                              {{ if not .Params.hidden }}
                                                                                 {{ $active := in $currentPage.RelPermalink .RelPermalink }}
                                                                                 {{ if .IsSection }}
                                                                                     <li class="sidebar-dropdown nested {{ if eq .Site.Params.docs.sidebarIcons true -}}{{ else }}no-icon{{ end }} {{ if $active }}current active{{ end }}">
@@ -106,6 +108,7 @@
                                                                                         <div class="sidebar-submenu {{ if $active }}d-block{{ end }}">
                                                                                             <ul>
                                                                                                 {{ range .Pages }}
+                                                                                                {{ if not .Params.hidden }}
                                                                                                     {{ $active := in $currentPage.RelPermalink .RelPermalink }}
                                                                                                     {{ if .IsSection }}
                                                                                                         <li class="sidebar-dropdown nested {{ if eq .Site.Params.docs.sidebarIcons true -}}{{ else }}no-icon{{ end }} {{ if $active }}current active{{ end }}">
@@ -118,6 +121,7 @@
                                                                                                             <div class="sidebar-submenu {{ if $active }}d-block{{ end }}">
                                                                                                             <ul>
                                                                                                                 {{ range .Pages }}
+                                                                                                                {{ if not .Params.hidden }}
                                                                                                                     {{ $active := in $currentPage.RelPermalink .RelPermalink }}
                                                                                                                     {{ if .IsSection }}
                                                                                                                         <li class="sidebar-dropdown nested {{ if eq .Site.Params.docs.sidebarIcons true -}}{{ else }}no-icon{{ end }} {{ if $active }}current active{{ end }}">
@@ -130,14 +134,17 @@
                                                                                                                             <div class="sidebar-submenu {{ if $active }}d-block{{ end }}">
                                                                                                                                 <ul>
                                                                                                                                     {{ range .Pages }}
+                                                                                                                                    {{ if not .Params.hidden }}
                                                                                                                                         {{ $active := in $currentPage.RelPermalink .RelPermalink }}
                                                                                                                                         <li class="{{ if $active }}current{{ end }} {{ if eq .Site.Params.docs.sidebarIcons true -}}{{ else }}no-icon{{ end }}"><a class="sidebar-nested-link" href="{{ .Permalink }}">{{ .Title }}</a></li>
+                                                                                                                                    {{ end }}
                                                                                                                                     {{ end }}
                                                                                                                                 </ul>
                                                                                                                             </div>
                                                                                                                         </li>
                                                                                                                     {{ else }}
                                                                                                                         <li class="{{ if $active }}current{{ end }} {{ if eq .Site.Params.docs.sidebarIcons true -}}{{ else }}no-icon{{ end }}"><a class="sidebar-nested-link" href="{{ .Permalink }}">{{ .Title }}</a></li>
+                                                                                                                    {{ end }}
                                                                                                                     {{ end }}
                                                                                                                 {{ end }}
                                                                                                             </ul>
@@ -146,6 +153,7 @@
                                                                                                 {{ else }}
                                                                                                     <li class="{{ if $active }}current{{ end }} {{ if eq .Site.Params.docs.sidebarIcons true -}}{{ else }}no-icon{{ end }}"><a class="sidebar-nested-link" href="{{ .Permalink }}">{{ .Title }}</a></li>
                                                                                                 {{ end }}
+                                                                                                {{ end }}
                                                                                             {{ end }}
                                                                                         </ul>
                                                                                         </div>
@@ -153,12 +161,14 @@
                                                                                 {{ else }}
                                                                                     <li class="{{ if $active }}current{{ end }} {{ if eq .Site.Params.docs.sidebarIcons true -}}{{ else }}no-icon{{ end }}"><a class="sidebar-nested-link" href="{{ .Permalink }}">{{ .Title }}</a></li>
                                                                                 {{ end }}
+                                                                                {{ end }}
                                                                             {{ end }}
                                                                         </ul>
                                                                     </div>
                                                                 </li>
                                                             {{ else }}
                                                                 <li class="{{ if $active }}current{{ end }} {{ if eq .Site.Params.docs.sidebarIcons true -}}{{ else }}no-icon{{ end }}"><a class="sidebar-nested-link" href="{{ .Permalink }}">{{ .Title }}</a></li>
+                                                            {{ end }}
                                                             {{ end }}
                                                         {{ end }}
                                                     </ul>
