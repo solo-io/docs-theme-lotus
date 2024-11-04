@@ -1,7 +1,7 @@
 /* FlexSearch */
 
 :root {
-    --flexsearch-container-bg-color: var(--gray-100);
+    --flexsearch-container-bg-color: var(--gray-50);
     --flexsearch-after-bg-color: var(--primary);
     --flexsearch-after-color: var(--white);
     --flexsearch-button-hover-bg-color: none;
@@ -25,7 +25,7 @@
     --flexsearch-suggestion-link-hover-bg-color: var(--gray-800);
     --flexsearch-suggestion-title-color: var(--primary-200);
     --flexsearch-suggestion-title-border-color: var(--gray-700);
-    --flexsearch-suggestion-desc-color: var(--gray-300);
+    --flexsearch-suggestion-desc-color: var(--gray-200);
 }
 
 #FlexSearchCollapse {
@@ -35,6 +35,7 @@
 
 .flexsearch-container {
     background-color: var(--flexsearch-container-bg-color);
+    display: block;
     padding: 0.8rem;
     .form-control {
         border: 2px solid var(--primary);
