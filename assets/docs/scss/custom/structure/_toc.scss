@@ -6,12 +6,14 @@
     --toc-link-hover-bg-color: var(--gray-300);
     --toc-mobile-btn-bg-color: var(--gray-100);
     --toc-mobile-menu-bg-color: var(--white);
+    --scroll-spy-background-color: var(--primary);
 }
 
 [data-dark-mode] {
     --toc-link-hover-bg-color: var(--gray-700);
     --toc-mobile-btn-bg-color: var(--gray-900);
     --toc-mobile-menu-bg-color: var(--body-bg);
+    --scroll-spy-background-color: #20B7F3;
 }
 
 .docs-toc-mobile {
@@ -163,11 +165,8 @@
     
     &.active {
         color: var(--white);
-        background-color: var(--primary);
+        background-color: var(--scroll-spy-background-color);
         // font-weight: 600;
         opacity: 0.9;
     }
 }
-
-
-
