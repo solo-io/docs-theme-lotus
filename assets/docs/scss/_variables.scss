@@ -1,5 +1,5 @@
 // scss-docs-start color-variables
-$blue:    #253e58; /*#2f55d4*/
+$blue:    #2068F3; /*#2f55d4*/
 $indigo:  #6610f2;
 $purple:  #6f42c1;
 $pink:    #d63384;
@@ -9,7 +9,7 @@ $yellow:  #f17425;
 $green:   #2eca8b;
 $teal:    #20c997;
 $cyan:    #17a2b8;
-$dark:    #0e1420;
+$dark:    #292F45;
 // scss-docs-end color-variables
 
 // scss-docs-start colors-map
@@ -78,16 +78,16 @@ $stretched-link-z-index:                  1;
 
     // color-variables (HSL)
 
-    --blue-900-hsl: 199, 80%, 42%;
-    --blue-800-hsl: 199, 80%, 42%;
-    --blue-700-hsl: 199, 80%, 42%;
-    --blue-600-hsl: 199, 80%, 42%;
-    --blue-500-hsl: 199, 80%, 42%;
-    --blue-400-hsl: 199, 80%, 42%;
-    --blue-300-hsl: 199, 80%, 70%;
-    --blue-200-hsl: 199, 80%, 42%;
-    --blue-100-hsl: 199, 80%, 42%;
-    --blue-50-hsl: 199, 80%, 98%;
+    --blue-900-hsl: 220, 90%, 54%; 
+    --blue-800-hsl: 220, 90%, 54%;
+    --blue-700-hsl: 220, 90%, 54%;
+    --blue-600-hsl: 220, 90%, 54%;
+    --blue-500-hsl: 220, 90%, 54%;
+    --blue-400-hsl: 220, 90%, 54%;
+    --blue-300-hsl: 197, 90%, 54%;
+    --blue-200-hsl: 197, 90%, 54%;
+    --blue-100-hsl: 197, 90%, 54%;
+    --blue-50-hsl: 220, 90%, 54%;
 
     --green-900-hsl: 153, 54%, 20%;
     --green-800-hsl: 145, 57%, 25%;
@@ -270,23 +270,23 @@ $stretched-link-z-index:                  1;
     --danger: var(--red);
     --light: var(--gray-100);
     // --dark: #0e1420;
-    --dark: #181921;
+    --dark: #151927;
     // --dark: #241c2d;
-    --dark-alt: #212529;
-    --dark-secondary: #292a35;
+    --dark-alt: #151927;
+    --dark-secondary: var(--gray-700); //#5C6178;
 
     // scss-docs-start gray-color-variables
     --white: #ffffff;
     --gray-50: #f7fafc;
-    --gray-100: #f8f9fa;
-    --gray-200: #e9ecef;
-    --gray-300: #dee2e6;
-    --gray-400: #ced4da;
-    --gray-500: #adb5bd;
-    --gray-600: #6c757d;
-    --gray-700: #495057;
-    --gray-800: #343a40;
-    --gray-900: #212529;
+    --gray-100: #DDDFED;
+    --gray-200: #B5B8CD;
+    --gray-300: #9DA1BD;
+    --gray-400: #9DA1BD;
+    --gray-500: #5C6178;
+    --gray-600: #5C6178;
+    --gray-700: #292F45;
+    --gray-800: #292F45;
+    --gray-900: #292F45;
     --black: #000000;
 
     // Links
@@ -370,7 +370,7 @@ $stretched-link-z-index:                  1;
 
     // Cards
     --card-bg: var(--white);
-    --card-border-color: var(--gray-400);
+    --card-border-color: var(--gray-200);
     --card-border-hover-color: var(--primary);
 
     // Sidebar
@@ -378,7 +378,7 @@ $stretched-link-z-index:                  1;
     --sidebar-bg: var(--white);
     --top-header-bg: hsla(255,100%,100%,0.8);
     --sidebar-text-color: var(--header-color);
-    --sidebar-border-color: var(--gray-200);
+    --sidebar-border-color: var(--gray-100);
     --sidebar-dropdown-hover-bg: #eff1f4;
     --sidebar-menu-active-bg: #f5f6f8;
     --sidebar-icon-bg: #f8f9fa;
@@ -416,15 +416,15 @@ $stretched-link-z-index:                  1;
 
     // Cards
     --card-bg: none;
-    --card-border-color: var(--gray-800);
+    --card-border-color: var(--gray-600);
     --card-border-hover-color: var(--primary-200);
 
     // sidebar
     --sidebar-primary: var(--primary-300);
     --sidebar-bg: var(--dark);
-    --top-header-bg: hsla(233,16%,11%,0.8);
+    --top-header-bg: var(--dark);
     --sidebar-text-color: #b6bbc9;
-    --sidebar-border-color: var(--gray-900);
+    --sidebar-border-color: var(--gray-800);
     --sidebar-dropdown-hover-bg: #2b303b;
     --sidebar-menu-active-bg: #2b303b;
     --sidebar-icon-bg: #2b303b;

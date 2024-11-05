@@ -298,16 +298,17 @@
         }
 
         .sidebar-subversion-btn-group {
-            display: flex;
-            gap: 0.5rem;
+            display: block;
+            //gap: 0.5rem;
 
-            padding-left: 1rem;
-            padding-right: 0.25rem;
+            //padding-left: 1rem;
+            //padding-right: 0.25rem;
             margin-top: 18px;
-            margin-bottom: -8px;
+            //margin-bottom: -8px;
+            font-weight: 300;
 
             .btn {
-                flex: 1 1 auto;
+              //  flex: 1 1 auto;
             }
             
             p {
