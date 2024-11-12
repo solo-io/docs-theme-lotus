@@ -1,0 +1,15 @@
+{{- $path := .Page.RelPermalink -}}
+{{ $version := .Page.FirstSection.RelPermalink }}
+{{ $newPath := strings.Replace $path $version "" -1 }}
+{{ $baseurl := .Site.BaseURL }}
+
+{{/* If current version uses a subversion, strip it from the path */}}
+{{ $versionTrimmed := trim $version "/" }}
+{{ if eq $versionTrimmed "main" }}
+<div class="alert alert-info d-flex">
+    <div class="w-100">
+     <p>{{ .Site.Params.versionBannerText | markdownify }}</p>
+    </div>
+ </div>
+ {{ end }}
+ 
