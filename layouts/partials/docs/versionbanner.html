@@ -1,7 +1,7 @@
-{{ $version := .Page.FirstSection.RelPermalink }}
-
+{{- $path := .Page.RelPermalink -}}
+{{ $trimmedPath := strings.Replace $path .Site.Params.folder "" -1 }}
 {{/* If current version uses a subversion, strip it from the path */}}
-{{ $versionTrimmed := trim $version "/" }}
+{{ $versionTrimmed := trim $trimmedPath "/" }}
 {{ if eq $versionTrimmed "main" }}
 <div class="alert alert-info d-flex">
     <div class="w-100">
