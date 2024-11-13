@@ -52,6 +52,11 @@
                                             {{- partial (printf "%s/%s" ($.Scratch.Get "pathName") "banner.html") . -}}
                                             </div>
                                             {{ end }}
+                                            {{ if site.Params.versionBanner | default false }}
+                                            <div class="banner">
+                                            {{- partial (printf "%s/%s" ($.Scratch.Get "pathName") "versionbanner.html") . -}}
+                                            </div>
+                                            {{ end }}
                                             <div class="mb-0 d-flex">
                                                 {{ if site.Params.docs.titleIcon | default false }}
                                                 <i class="material-icons title-icon me-2">{{- .Params.icon | default "article" }}</i>
