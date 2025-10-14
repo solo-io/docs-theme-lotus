@@ -1,4 +1,4 @@
-{- $path := .Page.RelPermalink -}}
+{{- $path := .Page.RelPermalink -}}
 {{ $trimmedPath := strings.Replace $path .Site.Params.folder "" -1 }}
 {{/* If current version uses a subversion, strip it from the path */}}
 {{ $versionTrimmed := trim $trimmedPath "/" }}
