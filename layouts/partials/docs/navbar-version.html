@@ -1,22 +1,118 @@
+{{- /* Get current path and version for reliable path replacement */ -}}
 {{- $path := .Page.RelPermalink -}}
-{{ $version := .Page.FirstSection.RelPermalink }}
-{{ $newPath := strings.Replace $path $version "" -1 }}
-{{ $baseurl := .Site.BaseURL }}
+{{- $version := .Page.FirstSection.RelPermalink -}}
+{{- $newPath := strings.Replace $path $version "" -1 -}}
+{{- $baseurl := .Site.BaseURL -}}
 
-{{/* If current version uses a subversion, strip it from the path */}}
-{{ $versionTrimmed := trim $version "/" }}
-{{ $versionData := index (where .Site.Params.versions "linkVersion" $versionTrimmed) 0 }}
-{{ range $versionData.subversions }}
-    {{ $newPath = strings.Replace $newPath .id "" 1 }}
-{{ end }}
+{{- /* If current version uses a subversion, strip it from the path */ -}}
+{{- $versionTrimmed := trim $version "/" -}}
+{{- $versionData := index (where .Site.Params.versions "linkVersion" $versionTrimmed) 0 -}}
+{{- if and $versionData $versionData.subversions -}}
+  {{- range $versionData.subversions -}}
+    {{- $newPath = strings.Replace $newPath .id "" 1 -}}
+  {{- end -}}
+{{- end -}}
 
-{{ $newPath = strings.TrimLeft "/" $newPath }}
-{{ range .Site.Params.versions }}
-    {{ $newSubversion := "" }}
-    {{ if .subversions }}
-        {{ $subObj := index (where .subversions "dropdownDefault" true) 0 }}
-        {{ if not $subObj }}{{ $subObj = index .subversions 0 }}{{ end }}
-        {{ $newSubversion = print "/" $subObj.id }}
-    {{ end }}
-    <li><a class="dropdown-item" href="{{ $baseurl }}/{{ .linkVersion }}{{ $newSubversion }}/{{ $newPath }}">{{ .dropdown }}</a></li>
-{{ end }}
+{{- $newPath = strings.TrimLeft "/" $newPath -}}
+
+{{- /* Get current product from config, current version, or URL */ -}}
+{{- $currentProduct := .Site.Params.currentProduct | default "" -}}
+{{- if not $currentProduct -}}
+  {{- /* Try to get product from current version data */ -}}
+  {{- $currentVersionData := index (where .Site.Params.versions "linkVersion" $versionTrimmed) 0 -}}
+  {{- if and $currentVersionData $currentVersionData.product -}}
+    {{- $currentProduct = $currentVersionData.product -}}
+  {{- else -}}
+    {{- /* Fallback: try to get from URL structure */ -}}
+    {{- $urlParts := strings.Split .Page.RelPermalink "/" -}}
+    {{- if ge (len $urlParts) 2 -}}
+      {{- $firstPart := index $urlParts 1 -}}
+      {{- $currentProduct = $firstPart -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* Group versions by product if products are defined */ -}}
+{{- $allVersions := .Site.Params.versions -}}
+{{- $productsList := slice -}}
+{{- $seenProducts := dict -}}
+{{- range $allVersions -}}
+  {{- if and .product .productName -}}
+    {{- $currentProductId := .product -}}
+    {{- if not (index $seenProducts $currentProductId) -}}
+      {{- $productVersions := where $allVersions "product" $currentProductId -}}
+      {{- $productsList = $productsList | append (dict "id" $currentProductId "name" .productName "versions" $productVersions) -}}
+      {{- $seenProducts = merge $seenProducts (dict $currentProductId true) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- if $productsList -}}
+  {{- /* Show versions grouped by product */ -}}
+  {{- $totalProducts := len $productsList -}}
+  {{- $currentIndex := 0 -}}
+  {{- range $productsList -}}
+    {{- $currentIndex = add $currentIndex 1 -}}
+    {{- $productId := .id -}}
+    {{- $productName := .name -}}
+    {{- $productVersions := .versions -}}
+    {{- /* Product header */ -}}
+    {{- if $productName -}}
+      <li><h6 class="dropdown-header">{{ $productName }}</h6></li>
+    {{- end -}}
+    {{- /* Versions for this product */ -}}
+    {{- range $productVersions -}}
+      {{- $newSubversion := "" -}}
+      {{- if .subversions -}}
+        {{- $subObj := index (where .subversions "dropdownDefault" true) 0 -}}
+        {{- if not $subObj }}{{ $subObj = index .subversions 0 }}{{ end -}}
+        {{- $newSubversion = print "/" $subObj.id -}}
+      {{- end -}}
+      {{- $isActive := and (in $versionTrimmed .linkVersion) (eq .product $currentProduct) -}}
+      {{- /* Check if switching to a different product */ -}}
+      {{- $isDifferentProduct := and $currentProduct .product (ne .product $currentProduct) -}}
+      {{- $versionUrl := "" -}}
+      {{- if $isDifferentProduct -}}
+        {{- /* Different product: use the landing page URL */ -}}
+        {{- $versionUrl = .url | default "" -}}
+      {{- else -}}
+        {{- /* Same product: preserve the current path */ -}}
+        {{- if $newPath -}}
+          {{- $versionUrl = printf "/%s%s/%s" .linkVersion $newSubversion $newPath -}}
+        {{- else -}}
+          {{- $versionUrl = printf "/%s%s/" .linkVersion $newSubversion -}}
+        {{- end -}}
+      {{- end -}}
+      <li><a class="dropdown-item ps-4 {{ if $isActive }}active{{ end }}" href="{{ $versionUrl }}">{{ .dropdown }}</a></li>
+    {{- end -}}
+    {{- /* Add divider between product groups, but not after the last one */ -}}
+    {{- if lt $currentIndex $totalProducts -}}
+      <li><hr class="dropdown-divider"></li>
+    {{- end -}}
+  {{- end -}}
+{{- else -}}
+  {{- /* Fallback: show all versions without grouping if products not defined */ -}}
+  {{- range $allVersions -}}
+    {{- $newSubversion := "" -}}
+    {{- if .subversions -}}
+      {{- $subObj := index (where .subversions "dropdownDefault" true) 0 -}}
+      {{- if not $subObj }}{{ $subObj = index .subversions 0 }}{{ end -}}
+      {{- $newSubversion = print "/" $subObj.id -}}
+    {{- end -}}
+    {{- /* Check if switching to a different product */ -}}
+    {{- $isDifferentProduct := and $currentProduct .product (ne .product $currentProduct) -}}
+    {{- $versionUrl := "" -}}
+    {{- if $isDifferentProduct -}}
+      {{- /* Different product: use the landing page URL */ -}}
+      {{- $versionUrl = .url | default "" -}}
+    {{- else -}}
+      {{- /* Same product: preserve the current path */ -}}
+      {{- if $newPath -}}
+        {{- $versionUrl = printf "/%s%s/%s" .linkVersion $newSubversion $newPath -}}
+      {{- else -}}
+        {{- $versionUrl = printf "/%s%s/" .linkVersion $newSubversion -}}
+      {{- end -}}
+    {{- end -}}
+    <li><a class="dropdown-item" href="{{ $versionUrl }}">{{ .dropdown }}</a></li>
+  {{- end -}}
+{{- end -}}

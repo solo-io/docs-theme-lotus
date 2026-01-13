@@ -7,8 +7,27 @@
 {{/* If current version uses a subversion, strip it from the path */}}
 {{ $versionTrimmed := trim $trimmedPath "/" }}
 
+{{- /* Get current product from config, current version, or URL */ -}}
+{{- $currentProduct := .Site.Params.currentProduct | default "" -}}
+{{- if not $currentProduct -}}
+  {{- /* Try to get product from current version data */ -}}
+  {{- $currentVersionData := index (where .Site.Params.versions "linkVersion" $versionTrimmed) 0 -}}
+  {{- if and $currentVersionData $currentVersionData.product -}}
+    {{- $currentProduct = $currentVersionData.product -}}
+  {{- else -}}
+    {{- /* Fallback: try to get from URL structure */ -}}
+    {{- $urlParts := strings.Split .Page.RelPermalink "/" -}}
+    {{- if ge (len $urlParts) 2 -}}
+      {{- $firstPart := index $urlParts 1 -}}
+      {{- $currentProduct = $firstPart -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
 {{ range .Site.Params.versions }}
-  {{ if or (eq .version $version) (eq .version $versionTrimmed) }}
+  {{- $versionMatches := or (eq .version $version) (eq .version $versionTrimmed) -}}
+  {{- $productMatches := or (not $currentProduct) (eq .product $currentProduct) -}}
+  {{ if and $versionMatches $productMatches }}
    {{ if ne .banner "" }}
    <div class="alert alert-info d-flex">
        <div class="w-100">
