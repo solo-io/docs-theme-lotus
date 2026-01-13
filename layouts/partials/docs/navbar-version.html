@@ -69,13 +69,19 @@
         {{- $newSubversion = print "/" $subObj.id -}}
       {{- end -}}
       {{- $isActive := and (in $versionTrimmed .linkVersion) (eq .product $currentProduct) -}}
-      {{- /* Construct URL - always use relative path construction, never use .url field directly */ -}}
+      {{- /* Check if switching to a different product */ -}}
+      {{- $isDifferentProduct := and $currentProduct .product (ne .product $currentProduct) -}}
       {{- $versionUrl := "" -}}
-      {{- /* Always construct relative path - works for both localhost and production */ -}}
-      {{- if $newPath -}}
-        {{- $versionUrl = printf "/%s%s/%s" .linkVersion $newSubversion $newPath -}}
+      {{- if $isDifferentProduct -}}
+        {{- /* Different product: use the landing page URL */ -}}
+        {{- $versionUrl = .url | default "" -}}
       {{- else -}}
-        {{- $versionUrl = printf "/%s%s/" .linkVersion $newSubversion -}}
+        {{- /* Same product: preserve the current path */ -}}
+        {{- if $newPath -}}
+          {{- $versionUrl = printf "/%s%s/%s" .linkVersion $newSubversion $newPath -}}
+        {{- else -}}
+          {{- $versionUrl = printf "/%s%s/" .linkVersion $newSubversion -}}
+        {{- end -}}
       {{- end -}}
       <li><a class="dropdown-item ps-4 {{ if $isActive }}active{{ end }}" href="{{ $versionUrl }}">{{ .dropdown }}</a></li>
     {{- end -}}
@@ -93,13 +99,19 @@
       {{- if not $subObj }}{{ $subObj = index .subversions 0 }}{{ end -}}
       {{- $newSubversion = print "/" $subObj.id -}}
     {{- end -}}
-    {{- /* Construct URL - always use relative path construction, never use .url field directly */ -}}
+    {{- /* Check if switching to a different product */ -}}
+    {{- $isDifferentProduct := and $currentProduct .product (ne .product $currentProduct) -}}
     {{- $versionUrl := "" -}}
-    {{- /* Always construct relative path - works for both localhost and production */ -}}
-    {{- if $newPath -}}
-      {{- $versionUrl = printf "/%s%s/%s" .linkVersion $newSubversion $newPath -}}
+    {{- if $isDifferentProduct -}}
+      {{- /* Different product: use the landing page URL */ -}}
+      {{- $versionUrl = .url | default "" -}}
     {{- else -}}
-      {{- $versionUrl = printf "/%s%s/" .linkVersion $newSubversion -}}
+      {{- /* Same product: preserve the current path */ -}}
+      {{- if $newPath -}}
+        {{- $versionUrl = printf "/%s%s/%s" .linkVersion $newSubversion $newPath -}}
+      {{- else -}}
+        {{- $versionUrl = printf "/%s%s/" .linkVersion $newSubversion -}}
+      {{- end -}}
     {{- end -}}
     <li><a class="dropdown-item" href="{{ $versionUrl }}">{{ .dropdown }}</a></li>
   {{- end -}}
