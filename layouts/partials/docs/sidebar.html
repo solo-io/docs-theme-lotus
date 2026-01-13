@@ -31,7 +31,24 @@
         {{ if .Site.Params.versions }}
             {{- $urlParts := strings.Split .Page.RelPermalink "/" -}}
             {{- $version := index $urlParts 1 -}}
-            {{ $versionData := index (where .Site.Params.versions "linkVersion" $version) 0 }}
+            {{- /* Get current product to filter version data correctly */ -}}
+            {{- $currentProduct := .Site.Params.currentProduct | default "" -}}
+            {{- if not $currentProduct -}}
+              {{- /* Try to get product from current version data */ -}}
+              {{- $currentVersionData := index (where .Site.Params.versions "linkVersion" $version) 0 -}}
+              {{- if and $currentVersionData $currentVersionData.product -}}
+                {{- $currentProduct = $currentVersionData.product -}}
+              {{- else -}}
+                {{- /* Fallback: try to get from URL structure */ -}}
+                {{- $currentProduct = index $urlParts 0 -}}
+              {{- end -}}
+            {{- end -}}
+            {{- /* Find version data matching both version and product */ -}}
+            {{- $matchingVersions := where .Site.Params.versions "linkVersion" $version -}}
+            {{- if $currentProduct -}}
+              {{- $matchingVersions = where $matchingVersions "product" $currentProduct -}}
+            {{- end -}}
+            {{ $versionData := index $matchingVersions 0 }}
             {{ $showSidebar = or (not $versionData.subversions) (index $urlParts 2) }}
             {{ if and $versionData.subversions $showSidebar }}
                 {{- $subversion := index $urlParts 2 -}}
@@ -54,7 +71,24 @@
                 {{ if not $showSidebar}} {{break}} {{ end }}
                 {{ $subversionToCheck := false }}
                 {{ if .Site.Params.versions }}
-                    {{ $versionData := index (where .Site.Params.versions "linkVersion" .Section) 0 }}
+                    {{- /* Get current product to filter version data correctly */ -}}
+                    {{- $currentProductForSection := .Site.Params.currentProduct | default "" -}}
+                    {{- if not $currentProductForSection -}}
+                      {{- /* Try to get product from current version data */ -}}
+                      {{- $currentVersionDataForSection := index (where .Site.Params.versions "linkVersion" .Section) 0 -}}
+                      {{- if and $currentVersionDataForSection $currentVersionDataForSection.product -}}
+                        {{- $currentProductForSection = $currentVersionDataForSection.product -}}
+                      {{- else -}}
+                        {{- /* Fallback: try to get from URL structure */ -}}
+                        {{- $currentProductForSection = index $urlParts 0 -}}
+                      {{- end -}}
+                    {{- end -}}
+                    {{- /* Find version data matching both version and product */ -}}
+                    {{- $matchingVersionsForSection := where .Site.Params.versions "linkVersion" .Section -}}
+                    {{- if $currentProductForSection -}}
+                      {{- $matchingVersionsForSection = where $matchingVersionsForSection "product" $currentProductForSection -}}
+                    {{- end -}}
+                    {{ $versionData := index $matchingVersionsForSection 0 }}
                     {{ if and $versionData $versionData.subversions }}
                         {{ range $urlParts }}
                             {{ if (where $versionData.subversions "id" "eq" .) | len }}
