@@ -51,14 +51,53 @@
                     <button class="btn btn-link btn-default dropdown-toggle ps-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         {{- $versionLong := .Page.FirstSection.RelPermalink -}}
                         {{- $version := trim $versionLong "/" -}}
+                        {{- $currentVersionData := "" -}}
+                        {{- $currentProduct := .Site.Params.currentProduct | default "" -}}
+                        {{- /* First, try to find current version to get its product */ -}}
                         {{- range .Site.Params.versions -}}
+                          {{- if in $version .linkVersion -}}
+                            {{- $currentVersionData = . -}}
+                            {{- /* If we don't have currentProduct, get it from the version */ -}}
+                            {{- if not $currentProduct -}}
+                              {{- if .product -}}
+                                {{- $currentProduct = .product -}}
+                              {{- end -}}
+                            {{- end -}}
+                            {{- break -}}
+                          {{- end -}}
+                        {{- end -}}
+                        {{- /* If we still don't have currentProduct and currentVersionData, try URL fallback */ -}}
+                        {{- if not $currentProduct -}}
+                          {{- $urlParts := strings.Split .Page.RelPermalink "/" -}}
+                          {{- if ge (len $urlParts) 2 -}}
+                            {{- $firstPart := index $urlParts 1 -}}
+                            {{- $currentProduct = $firstPart -}}
+                          {{- end -}}
+                        {{- end -}}
+                        {{- /* Re-find current version with product context if needed */ -}}
+                        {{- if not $currentVersionData -}}
+                          {{- range .Site.Params.versions -}}
+                            {{- if and (in $version .linkVersion) (or (not $currentProduct) (eq .product $currentProduct)) -}}
+                              {{- $currentVersionData = . -}}
+                              {{- break -}}
+                            {{- end -}}
+                          {{- end -}}
+                        {{- end -}}
+                        {{- if and $currentVersionData $currentVersionData.product $currentVersionData.productName -}}
+                          {{ $currentVersionData.productName }} - {{ $currentVersionData.dropdown }}
+                        {{- else if $currentVersionData -}}
+                          {{ $currentVersionData.dropdown }}
+                        {{- else -}}
+                          {{- /* Fallback to original behavior */ -}}
+                          {{- range .Site.Params.versions -}}
                             {{- if in $version .linkVersion -}}
                               {{- printf .dropdown -}}
-                            {{ break }}
+                              {{ break }}
                             {{- end -}}
+                          {{- end -}}
                         {{- end -}}
                     </button>
-                    <ul class="dropdown-menu text-end">
+                    <ul class="dropdown-menu">
                         {{ partial (printf "%s/%s" ($.Scratch.Get "pathName") "navbar-version") . }} 
                     </ul>
                 </div>
