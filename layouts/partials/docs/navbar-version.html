@@ -113,6 +113,6 @@
         {{- $versionUrl = printf "/%s%s/" .linkVersion $newSubversion -}}
       {{- end -}}
     {{- end -}}
-    <li><a class="dropdown-item" href="{{ $versionUrl }}">{{ .dropdown }}</a></li>
+    <li><a class="dropdown-item" href="{{ $baseurl }}{{ $versionUrl }}">{{ .dropdown }}</a></li>
   {{- end -}}
 {{- end -}}
