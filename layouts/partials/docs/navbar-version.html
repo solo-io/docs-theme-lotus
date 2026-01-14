@@ -3,6 +3,17 @@
 {{- $version := .Page.FirstSection.RelPermalink -}}
 {{- $newPath := strings.Replace $path $version "" -1 -}}
 {{- $baseurl := .Site.BaseURL -}}
+{{- $folder := .Site.Params.folder | default "" -}}
+
+{{- /* Determine if we should include folder in path based on current URL structure */ -}}
+{{- $includeFolder := false -}}
+{{- if $folder -}}
+  {{- /* Check if current path includes the folder (production scenario) */ -}}
+  {{- $folderPath := printf "/%s/" $folder -}}
+  {{- if strings.HasPrefix $path $folderPath -}}
+    {{- $includeFolder = true -}}
+  {{- end -}}
+{{- end -}}
 
 {{- /* If current version uses a subversion, strip it from the path */ -}}
 {{- $versionTrimmed := trim $version "/" -}}
@@ -77,10 +88,20 @@
         {{- $versionUrl = .url | default "" -}}
       {{- else -}}
         {{- /* Same product: preserve the current path */ -}}
-        {{- if $newPath -}}
-          {{- $versionUrl = printf "/%s%s/%s" .linkVersion $newSubversion $newPath -}}
+        {{- if $includeFolder -}}
+          {{- /* Include folder in path when current URL includes it (production) */ -}}
+          {{- if $newPath -}}
+            {{- $versionUrl = printf "/%s/%s%s/%s" $folder .linkVersion $newSubversion $newPath -}}
+          {{- else -}}
+            {{- $versionUrl = printf "/%s/%s%s/" $folder .linkVersion $newSubversion -}}
+          {{- end -}}
         {{- else -}}
-          {{- $versionUrl = printf "/%s%s/" .linkVersion $newSubversion -}}
+          {{- /* No folder: use relative path (localhost) */ -}}
+          {{- if $newPath -}}
+            {{- $versionUrl = printf "/%s%s/%s" .linkVersion $newSubversion $newPath -}}
+          {{- else -}}
+            {{- $versionUrl = printf "/%s%s/" .linkVersion $newSubversion -}}
+          {{- end -}}
         {{- end -}}
       {{- end -}}
       <li><a class="dropdown-item ps-4 {{ if $isActive }}active{{ end }}" href="{{ $versionUrl }}">{{ .dropdown }}</a></li>
@@ -107,10 +128,20 @@
       {{- $versionUrl = .url | default "" -}}
     {{- else -}}
       {{- /* Same product: preserve the current path */ -}}
-      {{- if $newPath -}}
-        {{- $versionUrl = printf "/%s%s/%s" .linkVersion $newSubversion $newPath -}}
+      {{- if $includeFolder -}}
+        {{- /* Include folder in path when current URL includes it (production) */ -}}
+        {{- if $newPath -}}
+          {{- $versionUrl = printf "/%s/%s%s/%s" $folder .linkVersion $newSubversion $newPath -}}
+        {{- else -}}
+          {{- $versionUrl = printf "/%s/%s%s/" $folder .linkVersion $newSubversion -}}
+        {{- end -}}
       {{- else -}}
-        {{- $versionUrl = printf "/%s%s/" .linkVersion $newSubversion -}}
+        {{- /* No folder: use relative path (localhost) */ -}}
+        {{- if $newPath -}}
+          {{- $versionUrl = printf "/%s%s/%s" .linkVersion $newSubversion $newPath -}}
+        {{- else -}}
+          {{- $versionUrl = printf "/%s%s/" .linkVersion $newSubversion -}}
+        {{- end -}}
       {{- end -}}
     {{- end -}}
     <li><a class="dropdown-item" href="{{ $baseurl }}{{ $versionUrl }}">{{ .dropdown }}</a></li>
