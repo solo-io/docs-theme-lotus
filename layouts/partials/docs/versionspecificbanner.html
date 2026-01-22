@@ -6,6 +6,9 @@
 {{ $trimmedPath := strings.Replace $pathprod .Site.Params.folder "" -1 }}
 {{/* If current version uses a subversion, strip it from the path */}}
 {{ $versionTrimmed := trim $trimmedPath "/" }}
+{{/* Extract just the version part from trimmed path */}}
+{{ $trimmedParts := split $versionTrimmed "/" }}
+{{ $versionTrimmed = index $trimmedParts 0 }}
 
 {{- /* Get current product from config, current version, or URL */ -}}
 {{- $currentProduct := .Site.Params.currentProduct | default "" -}}
@@ -25,7 +28,7 @@
 {{- end -}}
 
 {{ range .Site.Params.versions }}
-  {{- $versionMatches := or (eq .version $version) (eq .version $versionTrimmed) -}}
+  {{- $versionMatches := or (eq .linkVersion $version) (eq .linkVersion $versionTrimmed) -}}
   {{- $productMatches := or (not $currentProduct) (eq .product $currentProduct) -}}
   {{ if and $versionMatches $productMatches }}
    {{ if ne .banner "" }}
